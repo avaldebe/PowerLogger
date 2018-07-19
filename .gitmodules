@@ -1,0 +1,3 @@
+[submodule "lib/INA"]
+	path = lib/INA
+	url = git@github.com:SV-Zanshin/INA.git
