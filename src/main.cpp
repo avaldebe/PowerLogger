@@ -11,7 +11,7 @@ INA_Class INA;
 uint8_t devicesFound = 0;
 
 #include <SdFat.h>
-ArduinoOutStream cout(Serial);            // Serial streams
+ArduinoOutStream cout(Serial);            // stream to Serial
 SdFat SD;                                 // File system object.
 
 void setup() {
@@ -19,22 +19,30 @@ void setup() {
   devicesFound = INA.begin(1,100000);     // maxBusAmps,microOhmR
   INA.setBusConversion(8500);             // 8.244ms
   INA.setShuntConversion(8500);           // 8.244ms
-  INA.setAveraging(128);                  // 128 samples ==> ~1 measurement/s
+  INA.setAveraging(128);                  // => ~1 measurement/s
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);  // bus&shunt
 
+  // list channels
   cout << F("INA devices on the I2C bus\n");
   for (uint8_t i=0;i<devicesFound;i++) {
-    cout << i << F(": ") << 
-      INA.getDeviceName(i) << endl;
+    cout << F("ch") << i << F(": ") << INA.getDeviceName(i) << endl;
   }
-  cout << F("#,voltage[mV],current[uA]\n");
+  
+  // header
+  cout << F("millis");
+  for (uint8_t i=0;i<devicesFound;i++) {
+    cout << F(",ch") << i << F(" voltage [mV]")
+         << F(",ch") << i << F(" current [uA]");
+  }
+  cout << endl;
 }
 
 void loop() {
+  cout << millis();
   for (uint8_t i=0;i<devicesFound;i++) {
-    cout << i << F(",") << 
-      INA.getBusMilliVolts(i) << F(",") << 
-      INA.getBusMicroAmps(i) << endl;
+    cout << F(",") << INA.getBusMilliVolts(i)
+         << F(",") << INA.getBusMicroAmps(i);
   }
+  cout << endl;
   delay(5000);
 }
