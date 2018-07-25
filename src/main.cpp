@@ -13,6 +13,8 @@ uint8_t devicesFound = 0;
 #include <SdFat.h>
 ArduinoOutStream cout(Serial);            // stream to Serial
 SdFat SD;                                 // File system object.
+const uint8_t SD_chipSelect = 10;
+
 
 void setup() {
   Serial.begin(115200);
