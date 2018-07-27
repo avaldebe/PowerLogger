@@ -7,16 +7,6 @@ uint8_t devicesFound = 0;
 #include <EEPROM.h> 
 uint8_t eeStart, ee;
 
-#ifdef __STM32F1__  // emulated EEPROM
-#define EElen EEPROM.maxcount
-void EEget(uint8_t address, uint32_t data);
-void EEput(uint8_t address, uint32_t data);
-#else
-#define EElen EEPROM.length
-#define EEget EEPROM.get
-#define EEput EEPROM.put
-#endif
-
 void LOGbegin(){
   Serial.begin(115200);
   devicesFound = INA.begin(1,100000);     // maxBusAmps,microOhmR
@@ -43,6 +33,28 @@ void LOGheader(ArduinoOutStream *cout){
   }
   (*cout) << endl;
 }
+
+#ifdef __STM32F1__  // emulated EEPROM
+#define EElen EEPROM.maxcount
+template< typename T > void EEget(uint8_t address, T data){ // EEPROM.get
+  uint16 e = address;
+  uint16 *ptr = (uint16*) &data;
+  for(uint8_t n = sizeof(T); n ;--n) {
+    EEPROM.read(e++, ptr++);
+  }
+}
+template< typename T > void EEput(uint8_t address, T data){ // EEPROM.put
+  uint16 e = address;
+  uint16 *ptr = (uint16*) &data;
+  for(uint8_t n = sizeof(T); n ;--n) {
+    EEPROM.update(e++, *ptr++);
+  }
+}
+#else
+#define EElen EEPROM.length
+#define EEget EEPROM.get
+#define EEput EEPROM.put
+#endif
 
 bool LOGsave(){
   uint8_t chunkSize=(devicesFound*2+1)*sizeof(uint32_t);
@@ -72,22 +84,3 @@ void LOGdump(ArduinoOutStream *cout){
   }
   ee = eeStart;
 }
-
-#ifdef __STM32F1__  // emulated EEPROM
-// EEPROM.get for uint32_t
-void EEget(uint8_t address, uint32_t data){
-  uint16 e = address;
-  uint16 *ptr = (uint16*) &data;
-  for(uint8_t n = sizeof(uint32_t); n ;--n) {
-    EEPROM.read(e++, ptr++);
-  }
-}
-// EEPROM.put for uint32_t
-void EEput(uint8_t address, uint32_t data){
-  uint16 e = address;
-  uint16 *ptr = (uint16*) &data;
-  for(uint8_t n = sizeof(uint32_t); n ;--n) {
-    EEPROM.update(e++, *ptr++);
-  }
-}
-#endif
