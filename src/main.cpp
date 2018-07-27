@@ -12,14 +12,15 @@ SdFat SD;                                 // File system object.
 const uint8_t SD_chipSelect = 10;
 
 void setup() {
-  LOGbegin();       // discover & config INA devices
-  LOGheader(&cout); // list devices found
+  Serial.begin(115200);
+  LOGG.begin();       // discover & config INA devices
+  LOGG.header(&cout); // list devices found
 }
 
 void loop() {
-  if(LOGsave()){    // new set of measurements on buffer
+  if(LOGG.save()){    // new set of measurements on buffer
     delay(5000);    
   } else {          // buffer is full
-    LOGdump(&cout); // empty buffer
+    LOGG.dump(&cout); // empty buffer
   }
 }
