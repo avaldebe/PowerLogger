@@ -5,7 +5,18 @@ INA_Class INA;
 uint8_t devicesFound = 0;
 
 #include <EEPROM.h> 
-uint8_t eeStart, ee;
+#ifdef __STM32F1__  // emulated EEPROM
+#define EElen EEPROM.maxcount
+template< typename T > void EEget(uint8_t address, T data); // EEPROM.get
+template< typename T > void EEput(uint8_t address, T data); // EEPROM.put
+#else
+#define EElen EEPROM.length
+#define EEget EEPROM.get
+#define EEput EEPROM.put
+#endif
+
+uint8_t eeStart, ee, chunkSize;
+inline uint8_t bufferFull(){ return (EElen()-ee)<chunkSize; }
 
 void LOGbegin(){
   Serial.begin(115200);
@@ -14,8 +25,10 @@ void LOGbegin(){
   INA.setShuntConversion(8500);           // 8.244ms
   INA.setAveraging(128);                  // => ~1 measurement/s
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);  // bus&shunt
+
   eeStart = devicesFound*sizeof(inaEEPROM); // next EEPROM address after INA devices
   ee = eeStart;  
+  chunkSize = (devicesFound*2+1)*sizeof(uint32_t); // size of 1 dataset
 }
 
 void LOGheader(ArduinoOutStream *cout){
@@ -34,8 +47,34 @@ void LOGheader(ArduinoOutStream *cout){
   (*cout) << endl;
 }
 
+bool LOGsave(){
+  // is there new set of measurement?
+  if(bufferFull()){
+    return false;
+  }
+  // buffere results to EEPROM after INA devices
+  EEput(ee, (uint32_t)millis()); ee += sizeof(uint32_t);
+  for (uint8_t i=0; i<devicesFound; i++) {
+    EEput(ee, INA.getBusMilliVolts(i)); ee += sizeof(uint32_t);
+    EEput(ee, INA.getBusMicroAmps(i));  ee += sizeof(uint32_t); 
+  }
+  return true;
+}
+
+void LOGdump(ArduinoOutStream *cout){
+  uint32_t aux=0;
+  for (uint8_t e=eeStart; e<ee; e+=sizeof(uint32_t)) {
+    EEget(e, aux);
+    if((e-eeStart+sizeof(uint32_t))%chunkSize == 0){ // last in chunk
+      (*cout) << aux << endl;
+    } else{
+      (*cout) << aux << F(",");
+    }
+  }
+  ee = eeStart;
+}
+
 #ifdef __STM32F1__  // emulated EEPROM
-#define EElen EEPROM.maxcount
 template< typename T > void EEget(uint8_t address, T data){ // EEPROM.get
   uint16 e = address;
   uint16 *ptr = (uint16*) &data;
@@ -50,37 +89,4 @@ template< typename T > void EEput(uint8_t address, T data){ // EEPROM.put
     EEPROM.update(e++, *ptr++);
   }
 }
-#else
-#define EElen EEPROM.length
-#define EEget EEPROM.get
-#define EEput EEPROM.put
 #endif
-
-bool LOGsave(){
-  uint8_t chunkSize=(devicesFound*2+1)*sizeof(uint32_t);
-  // is there new set of measurement?
-  if((ee+chunkSize)>EElen()){
-    return false;
-  }
-  // buffere results to EEPROM after INA devices
-  EEput(ee, (uint32_t)millis()); ee += sizeof(uint32_t);
-  for (uint8_t i=0; i<devicesFound; i++) {
-    EEput(ee, INA.getBusMilliVolts(i)); ee += sizeof(uint32_t);
-    EEput(ee, INA.getBusMicroAmps(i));  ee += sizeof(uint32_t); 
-  }
-  return true;
-}
-
-void LOGdump(ArduinoOutStream *cout){
-  uint8_t chunkSize=(devicesFound*2+1)*sizeof(uint32_t);
-  uint32_t aux=0;
-  for (uint8_t e=eeStart; e<ee; e+=sizeof(uint32_t)) {
-    EEget(e, aux);
-    if((e-eeStart+sizeof(uint32_t))%chunkSize == 0){ // last in chunk
-      (*cout) << aux << endl;
-    } else{
-      (*cout) << aux << F(",");
-    }
-  }
-  ee = eeStart;
-}
