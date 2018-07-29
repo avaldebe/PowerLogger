@@ -22,18 +22,18 @@ class LOGGClass{
     uint8_t chunkSize = sizeof(uint32_t); // EEPROM cells needed for one dataset (timestamp, ...)
     uint8_t chunkMaxCount = 1;            //
     uint8_t chunkNext = 0;                // 0 .. chunkMaxCount-1
-    
+
     inline bool    bufferFull(){ return chunkNext>chunkMaxCount; }
     inline uint8_t bufferNext(){ return bufferStart+chunkNext*chunkSize; }
-    inline uint8_t bufferLast(uint8_t chunk, uint8_t idx=0){ 
+    inline uint8_t bufferLast(uint8_t chunk, uint8_t idx=0){
       return bufferStart
         +MIN(chunk,chunkMaxCount-1)*chunkSize
-        +MIN(idx,devicesFound*2)*sizeof(uint8_t); 
+        +MIN(idx,devicesFound*2)*sizeof(uint8_t);
     }
     inline uint8_t bufferLast(){ return bufferLast(chunkNext-1); }
-    
+
     uint32_t read(uint8_t chunk, uint8_t idx);  // get single value within saved chunk
 };
 
-static LOGGClass LOGG;
+extern LOGGClass LOGG;
 #endif

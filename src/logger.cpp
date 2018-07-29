@@ -3,17 +3,17 @@
 #include <INA.h>
 static INA_Class INA;
 
-#include <EEPROM.h> 
+#include <EEPROM.h>
 #ifdef __STM32F1__  // emulated EEPROM
 #define EElen EEPROM.maxcount
-template< typename T > static void EEget(uint8_t address, T data){ // EEPROM.get
+template< typename T > static void EEget(uint8_t address, T &data){ // EEPROM.get
   uint16 e = address;
   uint16 *ptr = (uint16*) &data;
   for(uint8_t n = sizeof(T); n ;--n) {
     EEPROM.read(e++, ptr++);
   }
 }
-template< typename T > static void EEput(uint8_t address, T data){ // EEPROM.put
+template< typename T > static void EEput(uint8_t address, const T &data){ // EEPROM.put
   uint16 e = address;
   uint16 *ptr = (uint16*) &data;
   for(uint8_t n = sizeof(T); n ;--n) {
@@ -35,7 +35,7 @@ void LOGGClass::begin(){
 
   bufferStart = devicesFound*sizeof(inaEEPROM); // next EEPROM address after INA devices
   chunkNext = 0;                      // 1st chunk @ bufferStart
-  
+
   // 1 chunk = timestamp, ch1 millivolts, ... ,chN microamp
   chunkSize = (1+devicesFound*2)*sizeof(uint32_t);
   chunkMaxCount = (EElen()-bufferStart)/chunkSize;
@@ -66,7 +66,7 @@ bool LOGGClass::save(){
   EEput(ee, (uint32_t)millis()); ee += sizeof(uint32_t);
   for (uint8_t i=0; i<devicesFound; i++) {
     EEput(ee, INA.getBusMilliVolts(i)); ee += sizeof(uint32_t);
-    EEput(ee, INA.getBusMicroAmps(i));  ee += sizeof(uint32_t); 
+    EEput(ee, INA.getBusMicroAmps(i));  ee += sizeof(uint32_t);
   }
   chunkNext++;
   return bufferFull();
@@ -87,3 +87,5 @@ void LOGGClass::dump(ArduinoOutStream *cout){
   }
   chunkNext = 0;
 }
+
+LOGGClass LOGG;
