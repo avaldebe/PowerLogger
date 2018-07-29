@@ -13,12 +13,25 @@ uint8_t devicesFound = 0;                 // number if INA devices found on I2C 
 #include "EEbuffer.h"                     // circular buffer on EEPROM
 
 #include <SdFat.h>
-ArduinoOutStream cout(Serial);            // stream to Serial
 SdFat SD;                                 // File system object.
-const uint8_t SD_chipSelect = 10;
+// Test with reduced SPI speed for breadboards.  SD_SCK_MHZ(4) will select
+// the highest speed supported by the board that is not over 4 MHz.
+// Change SPI_SPEED to SD_SCK_MHZ(50) for best performance.
+#define SPI_SPEED SD_SCK_MHZ(4)
+const uint8_t chipSelect = 10;
+
+#define FILENAME "INA.csv"
+File CSV;
+ArduinoOutStream cout(Serial);            // stream to Serial
+ArduinoOutStream csv(CSV);                // stream to CSV file
 
 void setup() {
   Serial.begin(115200);
+  while(!Serial){ SysCall::yield(); }     // Wait for USB Serial
+  if (!SD.begin(chipSelect, SPI_SPEED)) {
+    SD.initErrorHalt();                   // errorcode/message to Serial
+  }
+
   devicesFound = INA.begin(1,100000);     // maxBusAmps,microOhmR
   INA.setBusConversion(8500);             // 8.244ms
   INA.setShuntConversion(8500);           // 8.244ms
@@ -26,26 +39,30 @@ void setup() {
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);  // bus&shunt
 
   // use the rest of the EEPROM on a circular buffer
-  uint8_t bufferStart = devicesFound*sizeof(inaEEPROM); // next EEPROM address after INA devices
-  uint8_t chunkSize = (1+devicesFound*2)*sizeof(uint32_t); // timestamp, ch1 mV ... chN uA
-  uint8_t maxChunks = EEbuffer.begin(bufferStart, chunkSize);
+  uint8_t bufferStart, chunkSize, maxChunks;
+  bufferStart = devicesFound*sizeof(inaEEPROM);     // next EEPROM address after INA devices
+  chunkSize = (1+devicesFound*2)*sizeof(uint32_t);  // timestamp, ch1 mV, ch1 uA, ...
+  maxChunks = EEbuffer.begin(bufferStart, chunkSize);
 
   cout << F("INA devices on the I2C bus: ") << devicesFound << endl;
   for (uint8_t i=0; i<devicesFound; i++) {
     cout << F("ch") << i << F(": ") << INA.getDeviceName(i) << endl;
   }
 
-  cout << F("Buffering: ") <<
+  cout << F("Buffering ") <<
     maxChunks << F(" chunks of ") <<
-    chunkSize << F(" bytes\n");
+    chunkSize << F(" bytes before writing to SD:") << F(FILENAME) << endl;
 
-  // header
-  cout << F("millis");
+  // write header to CSV file
+  CSV = SD.open(F(FILENAME), FILE_WRITE);
+  if (!CSV) { SD.initErrorHalt(); }       // errorcode/message to Serial
+  csv << F("millis");
   for (uint8_t i=0; i<devicesFound; i++) {
-    cout << F(",ch") << i << F(" voltage [mV]")
-         << F(",ch") << i << F(" current [uA]");
+    csv << F(",ch") << i << F(" voltage [mV]")
+        << F(",ch") << i << F(" current [uA]");
   }
-  cout << endl;
+  csv << endl;
+  CSV.close();
 }
 
 void loop() {
@@ -55,14 +72,22 @@ void loop() {
     EEbuffer.put(INA.getBusMilliVolts(i));
     EEbuffer.put(INA.getBusMicroAmps(i));
   }
-  while(EEbuffer.isFull()){
-    uint32_t aux=0;
-    bool newline = EEbuffer.get(aux);
-    if(newline){
-      cout << aux << endl;
-    }else{
-      cout << aux << F(",");
+
+  // dump buffer to CSV file
+  uint32_t aux=0;
+  if(EEbuffer.isFull()){
+    CSV = SD.open(F(FILENAME), FILE_WRITE);
+    if (!CSV) { SD.initErrorHalt(); }     // errorcode/message to Serial
+    while(EEbuffer.isFull()){
+      bool newline = EEbuffer.get(aux);
+      if(newline){
+        csv << aux << endl;
+      }else{
+        csv << aux << F(",");
+      }
     }
+      CSV.close();
   }
-  delay(5000+millis()-timestamp); // wait 5sec in total
+
+  delay(5000+millis()-timestamp);         // wait 5sec in total
 }
