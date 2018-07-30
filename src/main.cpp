@@ -1,7 +1,9 @@
 /*
 Based on
 - DisplayReadings example fom INA library
-  https://github.com/SV-Zanshin/INA/wiki
+  https://github.com/SV-Zanshin/INA
+- QuickStart example form the SdFat library
+  https://github.com/greiman/SdFat
 */
 
 #include <Arduino.h>
