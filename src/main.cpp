@@ -28,7 +28,7 @@ ArduinoOutStream cout(Serial);            // stream to Serial
 ArduinoOutStream csv(CSV);                // stream to CSV file
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(57600);                    // for ATmega328p 3.3V 8Mhz
   while(!Serial){ SysCall::yield(); }     // Wait for USB Serial
   if (!SD.begin(chipSelect, SPI_SPEED)) {
     SD.initErrorHalt();                   // errorcode/message to Serial
@@ -53,10 +53,10 @@ void setup() {
 
   cout << F("Buffering ") <<
     maxChunks << F(" chunks of ") <<
-    chunkSize << F(" bytes before writing to SD:") << F(FILENAME) << endl;
+    chunkSize << F(" bytes before writing to SD:") << FILENAME << endl;
 
   // write header to CSV file
-  CSV = SD.open(F(FILENAME), FILE_WRITE);
+  CSV = SD.open(FILENAME, FILE_WRITE);
   if (!CSV) { SD.initErrorHalt(); }       // errorcode/message to Serial
   csv << F("millis");
   for (uint8_t i=0; i<devicesFound; i++) {
@@ -78,7 +78,7 @@ void loop() {
   // dump buffer to CSV file
   uint32_t aux=0;
   if(EEbuffer.isFull()){
-    CSV = SD.open(F(FILENAME), FILE_WRITE);
+    CSV = SD.open(FILENAME, FILE_WRITE);
     if (!CSV) { SD.initErrorHalt(); }     // errorcode/message to Serial
     while(EEbuffer.isFull()){
       bool newline = EEbuffer.get(aux);
