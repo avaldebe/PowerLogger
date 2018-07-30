@@ -12,20 +12,14 @@ Based on
 INA_Class INA;
 uint8_t devicesFound = 0;                 // number if INA devices found on I2C bus
 
-#include "EEbuffer.h"                     // circular buffer on EEPROM
-
 #include <SdFat.h>
 SdFat SD;                                 // File system object.
-// Test with reduced SPI speed for breadboards.  SD_SCK_MHZ(4) will select
-// the highest speed supported by the board that is not over 4 MHz.
-// Change SPI_SPEED to SD_SCK_MHZ(50) for best performance.
-#define SPI_SPEED SD_SCK_MHZ(4)
-const uint8_t chipSelect = 10;
-
-#define FILENAME "INA.csv"
-File CSV;
+File CSV;                                 // see config.h for FILENAME
 ArduinoOutStream cout(Serial);            // stream to Serial
 ArduinoOutStream csv(CSV);                // stream to CSV file
+
+#include "EEbuffer.h"                     // circular buffer on EEPROM
+#include "config.h"                       // project configuration
 
 void setup() {
   Serial.begin(57600);                    // for ATmega328p 3.3V 8Mhz
@@ -35,9 +29,9 @@ void setup() {
   }
 
   devicesFound = INA.begin(1,100000);     // maxBusAmps,microOhmR
-  INA.setBusConversion(8500);             // 8.244ms
-  INA.setShuntConversion(8500);           // 8.244ms
-  INA.setAveraging(128);                  // => ~1 measurement/s
+  INA.setBusConversion(INA_CONVTIME);     // see config.h for value
+  INA.setShuntConversion(INA_CONVTIME);   // see config.h for value
+  INA.setAveraging(INA_SEMPLES);          // see config.h for value
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);  // bus&shunt
 
   // use the rest of the EEPROM on a circular buffer
@@ -68,6 +62,8 @@ void setup() {
 }
 
 void loop() {
+  
+  // buffer new data chunk
   uint32_t timestamp = millis();
   EEbuffer.put(timestamp);
   for (uint8_t i=0; i<devicesFound; i++) {
@@ -91,5 +87,6 @@ void loop() {
       CSV.close();
   }
 
-  delay(5000+millis()-timestamp);         // wait 5sec in total
+  // wait until next measurement time
+  delay(millis()-timestamp+DELAY);
 }
