@@ -9,16 +9,24 @@ Based on
 */
 
 #include <Arduino.h>
+#include "config.h"                       // project configuration
 
 #include <INA.h>
 INA_Class INA;
 
 #include <SdFat.h>
 SdFat SD;                                 // File system object.
-File CSV;                                 // see config.h for FILENAME
+File CSV;                                 // File object for filename
 ArduinoOutStream cout(Serial);            // stream to Serial
 
-#include "config.h"                       // project configuration
+#ifdef HAST_RTC
+#include "RTCutil.h"
+char filename[16];                        // 'YYMMDD.csv'
+#else
+#define filename "INA.csv"
+#endif
+
+#include <CircularBuffer.h>
 class Record {
 private:
   uint32_t time;
@@ -54,12 +62,20 @@ public:
 	}
 };
 
-#include <CircularBuffer.h>
 CircularBuffer<Record*, BUFFER_SIZE> buffer;
 
 void setup() {
   Serial.begin(57600);                    // for ATmega328p 3.3V 8Mhz
   while(!Serial){ SysCall::yield(); }     // Wait for USB Serial
+
+  // set RTClock
+#ifdef HAST_RTC
+   if(rtc_now()<BUILD_TIME){
+     rtc_set(BUILD_TIME);
+     cout << F("Set RTC to built time: ") << BUILD_TIME << endl;
+   }
+#endif
+
   if (!SD.begin(chipSelect, SPI_SPEED)) {
     SD.initErrorHalt();                   // errorcode/message to Serial
   }
@@ -80,11 +96,22 @@ void setup() {
     cout << F("ch") << i << F(": ") << INA.getDeviceName(i) << endl;
   }
 
+#ifdef HAST_RTC
+  char datestr[20];
+  sprintf(datestr,"%04u:%02u:%02u %02u:%02u:%02u",
+    rtc.year(), rtc.month(), rtc.day(),
+    rtc.hour(), rtc.minute(), rtc.second());
+  cout << F("Logging start: ") << datestr << F("UTC @")<< (uint32_t)rtc_now() << endl;
+
+  sprintf(filename,"%02u%02u%02u.csv", rtc.year(), rtc.month(), rtc.day());
+#endif
+
   cout << F("Buffering ") <<
     BUFFER_SIZE << F(" records of ") <<
     (RECORD_SIZE*sizeof(uint32_t)) << F(" bytes before writing to SD:") <<
-    FILENAME << endl;
+    filename << endl;
 }
+
 
 void loop() {
 
@@ -95,8 +122,11 @@ void loop() {
 
   // dump buffer to CSV file
   if(buffer.isFull()){
-    bool newfile = !SD.exists(FILENAME);
-    CSV = SD.open(FILENAME, FILE_WRITE);
+#ifdef HAST_RTC
+    sprintf(filename,"%02u%02u%02u.csv", rtc.year(), rtc.month(), rtc.day());
+#endif
+    bool newfile = !SD.exists(filename);
+    CSV = SD.open(filename, FILE_WRITE);
     if (!CSV) { SD.initErrorHalt(); }     // errorcode/message to Serial
     if (newfile){
       buffer.first()->header(&CSV);

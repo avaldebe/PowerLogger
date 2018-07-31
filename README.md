@@ -24,6 +24,16 @@ The patches introduced by the `INAfork` have been submitted for integration, and
 SD card support is povided by the [SdFat library][SdFat].
 The [CircularBuffer library][Buffer] provides the buffer for the measurements.
 
+## Builtin RTC (STM32F1)
+STM32F1 microcontrollers have a builtin RTC.
+The [bluepill][] board has a 32 kHz RTC crystal
+and a dedicated pin (marked `VB` on the board and `Vbat` on the pinout)
+for a RTC battery backup.
+
+## External RTC (optional)
+The following external RTCs are supported via the [RTClib library][RTClib]:
+DS1302, DS1307, DS3231, PCF8583, PCF8563.
+
 ## CSV file
 
 Voltage and current measurements are not written directly to the SD card.
@@ -45,10 +55,16 @@ git submodule init lib/INA/
 
 # global install, so it can be used on other projects
 pio lib --global install SdFat CircularBuffer
+
+# optional
+pio lib --global install RTClib
 ```
 
 [GreatScott]: https://www.instructables.com/id/Make-Your-Own-Power-MeterLogger/
+[bluepill]:   https://wiki.stm32duino.com/index.php?title=Blue_Pill
+
 [INAlib]:  https://github.com/SV-Zanshin/INA
 [INAfork]: https://github.com/avaldebe/INA/tree/stm32f1
 [SdFat]:   https://github.com/greiman/SdFat
 [Buffer]:  https://github.com/rlogiacco/CircularBuffer
+[RTClib]:  https://github.com/adafruit/RTClib
