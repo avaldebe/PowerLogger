@@ -70,10 +70,11 @@ void setup() {
 
   // set RTClock
 #ifdef HAST_RTC
-   if(rtc_now()<BUILD_TIME){
-     rtc_set(BUILD_TIME);
-     cout << F("Set RTC to built time: ") << BUILD_TIME << endl;
-   }
+  rtc_now();
+  if(unixtime<BUILD_TIME){
+    rtc_set(BUILD_TIME);
+    cout << F("Set RTC to built time: ") << BUILD_TIME << endl;
+  }
 #endif
 
   if (!SD.begin(chipSelect, SPI_SPEED)) {
@@ -98,12 +99,12 @@ void setup() {
 
 #ifdef HAST_RTC
   char datestr[20];
-  sprintf(datestr,"%04u:%02u:%02u %02u:%02u:%02u",
-    rtc.year(), rtc.month(), rtc.day(),
-    rtc.hour(), rtc.minute(), rtc.second());
-  cout << F("Logging start: ") << datestr << F("UTC @")<< (uint32_t)rtc_now() << endl;
+  sprintf(datestr,"%04u-%02u-%02u %02u:%02u:%02u",
+    2000+rtc_get('y'), rtc_get('m'), rtc_get('d'),
+    rtc_get('H'), rtc_get('M'), rtc_get('S'));
+  cout << F("Logging start: ") << datestr << F("UTC @")<< unixtime << endl;
 
-  sprintf(filename,"%02u%02u%02u.csv", rtc.year(), rtc.month(), rtc.day());
+  sprintf(filename,"%02u%02u%02u.csv", rtc_get('y'), rtc_get('m'), rtc_get('d'));
 #endif
 
   cout << F("Buffering ") <<
@@ -122,9 +123,6 @@ void loop() {
 
   // dump buffer to CSV file
   if(buffer.isFull()){
-#ifdef HAST_RTC
-    sprintf(filename,"%02u%02u%02u.csv", rtc.year(), rtc.month(), rtc.day());
-#endif
     bool newfile = !SD.exists(filename);
     CSV = SD.open(filename, FILE_WRITE);
     if (!CSV) { SD.initErrorHalt(); }     // errorcode/message to Serial
@@ -135,6 +133,11 @@ void loop() {
       buffer.shift()->print(&CSV);
     }
     CSV.close();
+#ifdef HAST_RTC
+    // update filename for next set of Records
+    rtc_now();
+    sprintf(filename,"%02u%02u%02u.csv", rtc_get('y'), rtc_get('m'), rtc_get('d'));
+#endif
   }
 
   // wait until next measurement time

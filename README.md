@@ -32,7 +32,7 @@ for a RTC battery backup.
 
 ## External RTC (optional)
 The following external RTCs are supported via the [RTClib library][RTClib]:
-DS1302, DS1307, DS3231, PCF8583, PCF8563.
+DS1307, DS3231, PCF8583, PCF8563.
 
 ## CSV file
 
