@@ -10,7 +10,6 @@ Based on
 
 #include <INA.h>
 INA_Class INA;
-uint8_t devicesFound = 0;                 // number if INA devices found on I2C bus
 
 #include <SdFat.h>
 SdFat SD;                                 // File system object.
@@ -18,8 +17,8 @@ File CSV;                                 // see config.h for FILENAME
 ArduinoOutStream cout(Serial);            // stream to Serial
 ArduinoOutStream csv(CSV);                // stream to CSV file
 
-#include "EEbuffer.h"                     // circular buffer on EEPROM
 #include "config.h"                       // project configuration
+#include "EEbuffer.h"                     // circular buffer on EEPROM
 
 void setup() {
   Serial.begin(57600);                    // for ATmega328p 3.3V 8Mhz
@@ -28,7 +27,12 @@ void setup() {
     SD.initErrorHalt();                   // errorcode/message to Serial
   }
 
-  devicesFound = INA.begin(1,100000);     // maxBusAmps,microOhmR
+  uint8_t INAfound = INA.begin(1,100000); // maxBusAmps,microOhmR
+  while(INAfound != INA_COUNT){
+    cout << F("ERROR: INA devices expected ") << INA_COUNT <<
+            F(", found ") << INAfound << endl;
+    delay(DELAY);
+  }
   INA.setBusConversion(INA_CONVTIME);     // see config.h for value
   INA.setShuntConversion(INA_CONVTIME);   // see config.h for value
   INA.setAveraging(INA_SEMPLES);          // see config.h for value
@@ -36,12 +40,12 @@ void setup() {
 
   // use the rest of the EEPROM on a circular buffer
   uint8_t bufferStart, chunkSize, maxChunks;
-  bufferStart = devicesFound*sizeof(inaEEPROM);     // next EEPROM address after INA devices
-  chunkSize = (1+devicesFound*2)*sizeof(uint32_t);  // timestamp, ch1 mV, ch1 uA, ...
+  bufferStart = INA_COUNT*sizeof(inaEEPROM);     // next EEPROM address after INA devices
+  chunkSize = (1+INA_COUNT*2)*sizeof(uint32_t);  // timestamp, ch1 mV, ch1 uA, ...
   maxChunks = EEbuffer.begin(bufferStart, chunkSize);
 
-  cout << F("INA devices on the I2C bus: ") << devicesFound << endl;
-  for (uint8_t i=0; i<devicesFound; i++) {
+  cout << F("INA devices on the I2C bus: ") << INA_COUNT << endl;
+  for (uint8_t i=0; i<INA_COUNT; i++) {
     cout << F("ch") << i << F(": ") << INA.getDeviceName(i) << endl;
   }
 
@@ -53,7 +57,7 @@ void setup() {
   CSV = SD.open(FILENAME, FILE_WRITE);
   if (!CSV) { SD.initErrorHalt(); }       // errorcode/message to Serial
   csv << F("millis");
-  for (uint8_t i=0; i<devicesFound; i++) {
+  for (uint8_t i=0; i<INA_COUNT; i++) {
     csv << F(",ch") << i << F(" voltage [mV]")
         << F(",ch") << i << F(" current [uA]");
   }
@@ -62,11 +66,11 @@ void setup() {
 }
 
 void loop() {
-  
+
   // buffer new data chunk
   uint32_t timestamp = millis();
   EEbuffer.put(timestamp);
-  for (uint8_t i=0; i<devicesFound; i++) {
+  for (uint8_t i=0; i<INA_COUNT; i++) {
     EEbuffer.put(INA.getBusMilliVolts(i));
     EEbuffer.put(INA.getBusMicroAmps(i));
   }
@@ -84,7 +88,7 @@ void loop() {
         csv << aux << F(",");
       }
     }
-      CSV.close();
+    CSV.close();
   }
 
   // wait until next measurement time
