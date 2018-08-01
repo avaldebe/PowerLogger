@@ -26,4 +26,20 @@ void Record::print(Print* out) {
   out->println();
 }
 
+void Record::splash(Print* out) {
+              //1  23.000  1.000
+  out->print(F("#   V [V]  I [A]"));
+  for (uint8_t i=0; i<INA_COUNT; i++) {
+    out->print(i);
+    out->print(F(": "));
+    out->print((milliVolts[i]<10000)?F("   "):F("  "));
+    out->print(getVolts(i),3);
+    out->print(F("  "));
+    out->println(getAmps(i),3);
+  }
+  out->print(F("recs: ~"));
+  out->print(getRecs());
+}
+
+
 CircularBuffer<Record*, BUFFER_SIZE> buffer;
