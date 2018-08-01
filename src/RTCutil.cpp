@@ -21,6 +21,20 @@
   static uint32_t unixtime;
 #endif
 
+void rtc_begin(Print* out){
+  if(rtc_now()<BUILD_TIME){
+    rtc_now(BUILD_TIME);
+    out->print(F("Set RTC to built time: "));
+    out->println(BUILD_TIME);
+  }
+  out->print(F("PowerLogger start: "));
+  out->print(rtc_fmt('D'));    // long date
+  out->print(F(" "));
+  out->print(rtc_fmt('T'));    // long time
+  out->print(F("UTC @"));
+  out->println(rtc_now());
+}
+
 uint32_t rtc_now(){
 #ifdef __STM32F1__
   rtc.getTime(now);
@@ -46,7 +60,7 @@ char *rtc_fmt(const char fmt){
   switch (fmt) {
 #ifdef __STM32F1__
   case 'D': // long date
-    sprintf(str, "%04d-%02u-%02u", 2000+now.year, now.month, now.day);
+    sprintf(str, "%04u-%02u-%02u", 2000+now.year, now.month, now.day);
     break;
   case 'd': // short date
     sprintf(str, "%02u%02u%02u", now.year, now.month, now.day);
@@ -62,7 +76,7 @@ char *rtc_fmt(const char fmt){
     break;
 #else
   case 'D': // long date
-    sprintf(str, "%04d-%02u-%02u", now.year(), now.month(), now.day());
+    sprintf(str, "%04u-%02u-%02u", now.year(), now.month(), now.day());
     break;
   case 'd': // short date
     sprintf(str, "%02d%02u%02u", now.year()-2000, now.month(), now.day());

@@ -15,8 +15,9 @@ Based on
 #include <SdFat.h>
 SdFat SD;                                 // File system object.
 File CSV;                                 // File object for filename
-#ifdef HAST_RTC
+
 #include "RTCutil.h"
+#ifdef HAST_RTC
 #define FILENAME rtc_fmt('C')             // 'YYMMDD.csv'
 #else
 #define FILENAME "INA.csv"
@@ -25,15 +26,7 @@ File CSV;                                 // File object for filename
 void setup() {
   Serial.begin(57600);                    // for ATmega328p 3.3V 8Mhz
   while(!Serial){ SysCall::yield(); }     // Wait for USB Serial
-
-  // update RTC if needed
-#ifdef HAST_RTC
-  if(rtc_now()<BUILD_TIME){
-    rtc_now(BUILD_TIME);
-    Serial.print(F("Set RTC to built time: "));
-    Serial.println(BUILD_TIME);
-  }
-#endif
+  rtc_begin(&Serial);                     // update RTC if needed
 
   if (!SD.begin(chipSelect, SPI_SPEED)) {
     SD.initErrorHalt();                   // errorcode/message to Serial
@@ -60,15 +53,6 @@ void setup() {
     Serial.println(INA.getDeviceName(i));
   }
 
-#ifdef HAST_RTC
-  Serial.print(F("Logging start: "));
-  Serial.print(rtc_fmt('D'));    // long date
-  Serial.print(F(" "));
-  Serial.print(rtc_fmt('T'));    // long time
-  Serial.print(F("UTC @"));
-  Serial.println(rtc_now());
-#endif
-
   Serial.print(F("Buffering "));
   Serial.print(BUFFER_SIZE);
   Serial.print(F(" records of "));
@@ -85,9 +69,7 @@ void loop() {
 
   // dump buffer to CSV file
   if(buffer.isFull()){
-#ifdef HAST_RTC
     rtc_now();    // new date for filename
-#endif
     bool newfile = !SD.exists(FILENAME);
     CSV = SD.open(FILENAME, FILE_WRITE);
     if (!CSV) { SD.initErrorHalt(); }     // errorcode/message to Serial
