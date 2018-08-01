@@ -4,6 +4,8 @@ Based on
   https://github.com/SV-Zanshin/INA
 - QuickStart example form the SdFat library
   https://github.com/greiman/SdFat
+- Object example on the CircularBuffer library
+  https://github.com/rlogiacco/CircularBuffer
 */
 
 #include <Arduino.h>
@@ -15,10 +17,45 @@ INA_Class INA;
 SdFat SD;                                 // File system object.
 File CSV;                                 // see config.h for FILENAME
 ArduinoOutStream cout(Serial);            // stream to Serial
-ArduinoOutStream csv(CSV);                // stream to CSV file
 
 #include "config.h"                       // project configuration
-#include "EEbuffer.h"                     // circular buffer on EEPROM
+class Record {
+private:
+  uint32_t time;
+  uint32_t milliVolts[INA_COUNT];
+  uint32_t microAmps[INA_COUNT];
+
+public:
+  Record(){};
+  ~Record(){};
+	Record(uint32_t time): time(time) {
+    for (uint8_t i=0; i<INA_COUNT; i++) {
+      milliVolts[i] = INA.getBusMilliVolts(i);
+      microAmps[i] = INA.getBusMicroAmps(i);
+    }
+	}
+
+  void header(Print* out) {
+    out->print(F("millis"));
+    for (uint8_t i=0; i<INA_COUNT; i++) {
+      out->print(F(",ch"));out->print(i);out->print(F(" voltage [mV]"));
+      out->print(F(",ch"));out->print(i);out->print(F(" current [uA]"));
+    }
+    out->println();
+  }
+
+  void print(Print* out) {
+		out->print(time);
+    for (uint8_t i=0; i<INA_COUNT; i++) {
+      out->print(F(","));out->print(milliVolts[i]);
+      out->print(F(","));out->print(microAmps[i]);
+    }
+    out->println();
+	}
+};
+
+#include <CircularBuffer.h>
+CircularBuffer<Record*, BUFFER_SIZE> buffer;
 
 void setup() {
   Serial.begin(57600);                    // for ATmega328p 3.3V 8Mhz
@@ -38,55 +75,34 @@ void setup() {
   INA.setAveraging(INA_SEMPLES);          // see config.h for value
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);  // bus&shunt
 
-  // use the rest of the EEPROM on a circular buffer
-  uint8_t bufferStart, chunkSize, maxChunks;
-  bufferStart = INA_COUNT*sizeof(inaEEPROM);     // next EEPROM address after INA devices
-  chunkSize = (1+INA_COUNT*2)*sizeof(uint32_t);  // timestamp, ch1 mV, ch1 uA, ...
-  maxChunks = EEbuffer.begin(bufferStart, chunkSize);
-
   cout << F("INA devices on the I2C bus: ") << INA_COUNT << endl;
   for (uint8_t i=0; i<INA_COUNT; i++) {
     cout << F("ch") << i << F(": ") << INA.getDeviceName(i) << endl;
   }
 
   cout << F("Buffering ") <<
-    maxChunks << F(" chunks of ") <<
-    chunkSize << F(" bytes before writing to SD:") << FILENAME << endl;
-
-  // write header to CSV file
-  CSV = SD.open(FILENAME, FILE_WRITE);
-  if (!CSV) { SD.initErrorHalt(); }       // errorcode/message to Serial
-  csv << F("millis");
-  for (uint8_t i=0; i<INA_COUNT; i++) {
-    csv << F(",ch") << i << F(" voltage [mV]")
-        << F(",ch") << i << F(" current [uA]");
-  }
-  csv << endl;
-  CSV.close();
+    BUFFER_SIZE << F(" records of ") <<
+    (RECORD_SIZE*sizeof(uint32_t)) << F(" bytes before writing to SD:") <<
+    FILENAME << endl;
 }
 
 void loop() {
 
   // buffer new data chunk
   uint32_t timestamp = millis();
-  EEbuffer.put(timestamp);
-  for (uint8_t i=0; i<INA_COUNT; i++) {
-    EEbuffer.put(INA.getBusMilliVolts(i));
-    EEbuffer.put(INA.getBusMicroAmps(i));
-  }
+  Record* record = new Record(timestamp);
+  buffer.unshift(record);
 
   // dump buffer to CSV file
-  uint32_t aux=0;
-  if(EEbuffer.isFull()){
+  if(buffer.isFull()){
+    bool newfile = !SD.exists(FILENAME);
     CSV = SD.open(FILENAME, FILE_WRITE);
     if (!CSV) { SD.initErrorHalt(); }     // errorcode/message to Serial
-    while(EEbuffer.isFull()){
-      bool newline = EEbuffer.get(aux);
-      if(newline){
-        csv << aux << endl;
-      }else{
-        csv << aux << F(",");
-      }
+    if (newfile){
+      buffer.first()->header(&CSV);
+    }
+    while (!buffer.isEmpty()) {
+      buffer.shift()->print(&CSV);
     }
     CSV.close();
   }
