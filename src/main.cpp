@@ -59,7 +59,6 @@ public:
     out->println();
 	}
 };
-
 CircularBuffer<Record*, BUFFER_SIZE> buffer;
 
 void setup() {
