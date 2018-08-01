@@ -10,9 +10,7 @@ Based on
 
 #include <Arduino.h>
 #include "config.h"                       // project configuration
-
-#include <INA.h>
-INA_Class INA;
+#include "Record.h"                       // secret sauce ;-)
 
 #include <SdFat.h>
 SdFat SD;                                 // File system object.
@@ -24,42 +22,6 @@ char filename[16];                        // 'YYMMDD.csv'
 #define filename "INA.csv"
 #endif
 
-#include <CircularBuffer.h>
-class Record {
-private:
-  uint32_t time;
-  uint32_t milliVolts[INA_COUNT];
-  uint32_t microAmps[INA_COUNT];
-
-public:
-  Record(){};
-  ~Record(){};
-	Record(uint32_t time): time(time) {
-    for (uint8_t i=0; i<INA_COUNT; i++) {
-      milliVolts[i] = INA.getBusMilliVolts(i);
-      microAmps[i] = INA.getBusMicroAmps(i);
-    }
-	}
-
-  void header(Print* out) {
-    out->print(F("millis"));
-    for (uint8_t i=0; i<INA_COUNT; i++) {
-      out->print(F(",ch"));out->print(i);out->print(F(" voltage [mV]"));
-      out->print(F(",ch"));out->print(i);out->print(F(" current [uA]"));
-    }
-    out->println();
-  }
-
-  void print(Print* out) {
-		out->print(time);
-    for (uint8_t i=0; i<INA_COUNT; i++) {
-      out->print(F(","));out->print(milliVolts[i]);
-      out->print(F(","));out->print(microAmps[i]);
-    }
-    out->println();
-	}
-};
-CircularBuffer<Record*, BUFFER_SIZE> buffer;
 
 void setup() {
   Serial.begin(57600);                    // for ATmega328p 3.3V 8Mhz
