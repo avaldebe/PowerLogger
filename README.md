@@ -34,6 +34,11 @@ for a RTC battery backup.
 The following external RTCs are supported via the [RTClib library][RTClib]:
 DS1307, DS3231, PCF8583, PCF8563.
 
+## Display (optional)
+
+Support for small displays is planed using the [U8x8 constructors][U8x8]
+from the [U8g2 library][U8g2].
+
 ## CSV file
 
 Voltage and current measurements are not written directly to the SD card.
@@ -56,8 +61,11 @@ git submodule init lib/INA/
 # global install, so it can be used on other projects
 pio lib --global install SdFat CircularBuffer
 
-# optional
+# external RTC (optional)
 pio lib --global install RTClib
+
+# display (optional)
+pio lib --global install U8g2
 ```
 
 [GreatScott]: https://www.instructables.com/id/Make-Your-Own-Power-MeterLogger/
@@ -68,3 +76,5 @@ pio lib --global install RTClib
 [SdFat]:   https://github.com/greiman/SdFat
 [Buffer]:  https://github.com/rlogiacco/CircularBuffer
 [RTClib]:  https://github.com/adafruit/RTClib
+[U8g2]:    https://github.com/olikraus/u8g2
+[U8x8]:    https://github.com/olikraus/u8g2/wiki/u8x8reference
