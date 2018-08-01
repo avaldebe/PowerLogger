@@ -2,7 +2,7 @@
 #define RTCutil_h
 
 #ifndef HAST_RTC
-  #error "Missing DSHAST_RTC1307 flag, try agail with -DHAST_RTC=DS1307"
+  #error "Missing HAST_RTC flag, try agail with -DHAST_RTC=DS1307"
 #endif
 
 #ifndef BUILD_TIME
@@ -12,7 +12,8 @@
 #ifdef __STM32F1__
   #include <RTClock.h>                    // builtin RTC
   RTClock rtc(RTCSEL_LSE);                // initialise clock source
-  tm_t now;
+  static tm_t now;
+  static uint32_t unixtime;
 #else
   #include <RTClib.h>
   #if   HAST_RTC == DS1307
@@ -24,11 +25,11 @@
   #elif HAST_RTC == PCF8563
   RTC_PCF8563 rtc;
   #endif
-  DateTime now;
+  static DateTime now;
+  static uint32_t unixtime;
 #endif
-uint32_t unixtime;
 
-void rtc_now(){
+uint32_t rtc_now(){
 #ifdef __STM32F1__
   rtc.getTime(now);
   unixtime = rtc.getTime();
@@ -36,15 +37,16 @@ void rtc_now(){
   now = rtc.now();
   unixtime = now.unixtime();
 #endif
+  return unixtime;
 }
 
-void rtc_set(uint32_t time){
+uint32_t rtc_now(uint32_t time){
 #ifdef __STM32F1__
   rtc.setTime(time);
 #else
-  now = DateTime(time);
-  rtc.adjust(now);
+  rtc.adjust(DateTime(time));
 #endif
+  return rtc_now(); // update now/unixtime
 }
 
 char *rtc_fmt(char *datestr, const char fmt){

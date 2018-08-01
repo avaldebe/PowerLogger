@@ -68,9 +68,8 @@ void setup() {
 
   // set RTClock
 #ifdef HAST_RTC
-  rtc_now();
-  if(unixtime<BUILD_TIME){
-    rtc_set(BUILD_TIME);
+  if(rtc_now()<BUILD_TIME){
+    rtc_now(BUILD_TIME);
     Serial.print(F("Set RTC to built time: "));
     Serial.println(BUILD_TIME);
   }
@@ -108,13 +107,13 @@ void setup() {
   Serial.print(F(" "));
   Serial.print(rtc_fmt(datestr, 'T'));    // long time
   Serial.print(F("UTC @"));
-  Serial.println(unixtime);
+  Serial.println(rtc_now());
 #endif
 
   Serial.print(F("Buffering "));
   Serial.print(BUFFER_SIZE);
   Serial.print(F(" records of "));
-  Serial.print((RECORD_SIZE*sizeof(uint32_t)));
+  Serial.print(RECORD_SIZE*sizeof(uint32_t));
   Serial.print(" bytes before writing to SD:");
 #ifdef HAST_RTC
   Serial.println(rtc_fmt(filename, 'C')); // YYMMDD.csv
