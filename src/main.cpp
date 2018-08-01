@@ -22,12 +22,11 @@ char filename[16];                        // 'YYMMDD.csv'
 #define filename "INA.csv"
 #endif
 
-
 void setup() {
   Serial.begin(57600);                    // for ATmega328p 3.3V 8Mhz
   while(!Serial){ SysCall::yield(); }     // Wait for USB Serial
 
-  // set RTClock
+  // update RTC if needed
 #ifdef HAST_RTC
   if(rtc_now()<BUILD_TIME){
     rtc_now(BUILD_TIME);
@@ -86,8 +85,7 @@ void setup() {
 void loop() {
 
   // buffer new data chunk
-  uint32_t timestamp = millis();
-  Record* record = new Record(timestamp);
+  Record* record = new Record(millis());
   buffer.unshift(record);
 
   // dump buffer to CSV file
@@ -110,5 +108,5 @@ void loop() {
   }
 
   // wait until next measurement time
-  delay(millis()-timestamp+DELAY);
+  delay(millis()-record->getTime()+DELAY);
 }

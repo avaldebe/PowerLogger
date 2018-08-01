@@ -1,8 +1,8 @@
 #ifndef Record_h
 #define Record_h
 
-#include <Print.h>
 #include <stdint.h>
+#include <Print.h>
 #include "config.h"                       // project configuration
 
 #include <INA.h>
@@ -13,6 +13,11 @@ public:
   Record(){};
 	Record(uint32_t time);
   ~Record(){};
+
+  inline uint32_t getTime() { return time; }
+  inline uint32_t getMilliVolts(uint8_t i) { return (i<INA_COUNT)?milliVolts[i]:0; }
+  inline uint32_t getMmicroAmps(uint8_t i) { return (i<INA_COUNT)?microAmps[i]:0; }
+
   void header(Print* out);
   void print(Print* out);
 
