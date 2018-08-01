@@ -13,5 +13,5 @@
 
 uint32_t rtc_now();
 uint32_t rtc_now(uint32_t time);
-char *rtc_fmt(char *datestr, const char fmt);
+char *rtc_fmt(const char fmt);
 #endif

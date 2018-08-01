@@ -17,9 +17,9 @@ SdFat SD;                                 // File system object.
 File CSV;                                 // File object for filename
 #ifdef HAST_RTC
 #include "RTCutil.h"
-char filename[16];                        // 'YYMMDD.csv'
+#define FILENAME rtc_fmt('C')             // 'YYMMDD.csv'
 #else
-#define filename "INA.csv"
+#define FILENAME "INA.csv"
 #endif
 
 void setup() {
@@ -61,11 +61,10 @@ void setup() {
   }
 
 #ifdef HAST_RTC
-  char datestr[12];
   Serial.print(F("Logging start: "));
-  Serial.print(rtc_fmt(datestr, 'D'));    // long date
+  Serial.print(rtc_fmt('D'));    // long date
   Serial.print(F(" "));
-  Serial.print(rtc_fmt(datestr, 'T'));    // long time
+  Serial.print(rtc_fmt('T'));    // long time
   Serial.print(F("UTC @"));
   Serial.println(rtc_now());
 #endif
@@ -75,11 +74,7 @@ void setup() {
   Serial.print(F(" records of "));
   Serial.print(RECORD_SIZE*sizeof(uint32_t));
   Serial.print(" bytes before writing to SD:");
-#ifdef HAST_RTC
-  Serial.println(rtc_fmt(filename, 'C')); // YYMMDD.csv
-#else
-  Serial.println(filename);
-#endif
+  Serial.println(FILENAME);
 }
 
 void loop() {
@@ -90,8 +85,11 @@ void loop() {
 
   // dump buffer to CSV file
   if(buffer.isFull()){
-    bool newfile = !SD.exists(filename);
-    CSV = SD.open(filename, FILE_WRITE);
+#ifdef HAST_RTC
+    rtc_now();    // new date for filename
+#endif
+    bool newfile = !SD.exists(FILENAME);
+    CSV = SD.open(FILENAME, FILE_WRITE);
     if (!CSV) { SD.initErrorHalt(); }     // errorcode/message to Serial
     if (newfile){
       buffer.first()->header(&CSV);
@@ -100,11 +98,6 @@ void loop() {
       buffer.shift()->print(&CSV);
     }
     CSV.close();
-#ifdef HAST_RTC
-    // update filename for next set of Records
-    rtc_now();
-    rtc_fmt(filename, 'C'); // file.csv
-#endif
   }
 
   // wait until next measurement time
