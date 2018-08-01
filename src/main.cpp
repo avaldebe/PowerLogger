@@ -17,8 +17,6 @@ INA_Class INA;
 #include <SdFat.h>
 SdFat SD;                                 // File system object.
 File CSV;                                 // File object for filename
-ArduinoOutStream cout(Serial);            // stream to Serial
-
 #ifdef HAST_RTC
 #include "RTCutil.h"
 char filename[16];                        // 'YYMMDD.csv'
@@ -73,7 +71,8 @@ void setup() {
   rtc_now();
   if(unixtime<BUILD_TIME){
     rtc_set(BUILD_TIME);
-    cout << F("Set RTC to built time: ") << BUILD_TIME << endl;
+    Serial.print(F("Set RTC to built time: "));
+    Serial.println(BUILD_TIME);
   }
 #endif
 
@@ -83,8 +82,10 @@ void setup() {
 
   uint8_t INAfound = INA.begin(1,100000); // maxBusAmps,microOhmR
   while(INAfound != INA_COUNT){
-    cout << F("ERROR: INA devices expected ") << INA_COUNT <<
-            F(", found ") << INAfound << endl;
+    Serial.print(F("ERROR: INA devices expected "));
+    Serial.print(INA_COUNT);
+    Serial.print(F(", found "));
+    Serial.println(INAfound);
     delay(DELAY);
   }
   INA.setBusConversion(INA_CONVTIME);     // see config.h for value
@@ -92,27 +93,35 @@ void setup() {
   INA.setAveraging(INA_SEMPLES);          // see config.h for value
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);  // bus&shunt
 
-  cout << F("INA devices on the I2C bus: ") << INA_COUNT << endl;
+  Serial.print(F("INA devices on the I2C bus: "));
+  Serial.println(INA_COUNT);
   for (uint8_t i=0; i<INA_COUNT; i++) {
-    cout << F("ch") << i << F(": ") << INA.getDeviceName(i) << endl;
+    Serial.print(F("ch"));
+    Serial.print(i);
+    Serial.println(INA.getDeviceName(i));
   }
 
 #ifdef HAST_RTC
-  char datestr[20];
-  sprintf(datestr,"%04u-%02u-%02u %02u:%02u:%02u",
-    2000+rtc_get('y'), rtc_get('m'), rtc_get('d'),
-    rtc_get('H'), rtc_get('M'), rtc_get('S'));
-  cout << F("Logging start: ") << datestr << F("UTC @")<< unixtime << endl;
-
-  sprintf(filename,"%02u%02u%02u.csv", rtc_get('y'), rtc_get('m'), rtc_get('d'));
+  char datestr[12];
+  Serial.print(F("Logging start: "));
+  Serial.print(rtc_fmt(datestr, 'D'));    // long date
+  Serial.print(F(" "));
+  Serial.print(rtc_fmt(datestr, 'T'));    // long time
+  Serial.print(F("UTC @"));
+  Serial.println(unixtime);
 #endif
 
-  cout << F("Buffering ") <<
-    BUFFER_SIZE << F(" records of ") <<
-    (RECORD_SIZE*sizeof(uint32_t)) << F(" bytes before writing to SD:") <<
-    filename << endl;
+  Serial.print(F("Buffering "));
+  Serial.print(BUFFER_SIZE);
+  Serial.print(F(" records of "));
+  Serial.print((RECORD_SIZE*sizeof(uint32_t)));
+  Serial.print(" bytes before writing to SD:");
+#ifdef HAST_RTC
+  Serial.println(rtc_fmt(filename, 'C')); // YYMMDD.csv
+#else
+  Serial.println(filename);
+#endif
 }
-
 
 void loop() {
 
@@ -136,7 +145,7 @@ void loop() {
 #ifdef HAST_RTC
     // update filename for next set of Records
     rtc_now();
-    sprintf(filename,"%02u%02u%02u.csv", rtc_get('y'), rtc_get('m'), rtc_get('d'));
+    rtc_fmt(filename, 'C'); // file.csv
 #endif
   }
 

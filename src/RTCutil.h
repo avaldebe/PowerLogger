@@ -47,50 +47,43 @@ void rtc_set(uint32_t time){
 #endif
 }
 
-uint8_t rtc_get(const char fld){
-  switch (fld) {
-  case 'Y':
-  case 'y':
-  #ifdef __STM32F1__
-    return now.year;
-  #else
-    return (uint8_t)(now.year()-2000);
-  #endif
-  case 'm':
-  #ifdef __STM32F1__
-    return now.month;
-  #else
-    return now.month();
-  #endif
-  case 'd':
-  #ifdef __STM32F1__
-    return now.day;
-  #else
-    return now.day();
-  #endif
-  case 'H':
-  #ifdef __STM32F1__
-    return now.hour;
-  #else
-    return now.hour();
-  #endif
-  case 'M':
-  #ifdef __STM32F1__
-    return now.minute;
-  #else
-    return now.minute();
-  #endif
-  case 'S':
-  #ifdef __STM32F1__
-    return now.second;
-  #else
-    return now.second();
-  #endif
-  default:
-    return 0xFF;
+char *rtc_fmt(char *datestr, const char fmt){
+  switch (fmt) {
+#ifdef __STM32F1__
+  case 'D': // long date
+    sprintf(datestr, "%04d-%02u-%02u", 2000+now.year, now.month, now.day);
+    break;
+  case 'd': // short date
+    sprintf(datestr, "%02u%02u%02u", now.year, now.month, now.day);
+    break;
+  case 'T': // long time
+    sprintf(datestr, "%02u:%02u:%02u", now.hour, now.minute, now.second);
+    break;
+  case 't': // short time
+    sprintf(datestr, "%02u%02u", now.hour, now.minute);
+    break;
+  case 'C': // file.csv
+    sprintf(datestr, "%02u%02u%02u.csv", now.year, now.month, now.day);
+    break;
+#else
+  case 'D': // long date
+    sprintf(datestr, "%04d-%02u-%02u", now.year(), now.month(), now.day());
+    break;
+  case 'd': // short date
+    sprintf(datestr, "%02d%02u%02u", now.year()-2000, now.month(), now.day());
+    break;
+  case 'T': // long time
+    sprintf(datestr, "%02u:%02u:%02u", now.hour(), now.minute(), now.second());
+    break;
+  case 't': // short time
+    sprintf(datestr, "%02u%02u", now.hour(), now.minute());
+    break;
+  case 'C': // YYMMDD.csv
+    sprintf(datestr, "%02d%02u%02u.csv", now.year()-2000, now.month(), now.day());
+    break;
+#endif
   }
+  return datestr;
 }
-
-
 
 #endif
