@@ -8,7 +8,7 @@ Record::Record(uint32_t time): time(time) {
   }
 }
 
-char *Record::getRunTime(){ 
+char *Record::getRunTime(){
   uint32_t secs;
   uint8_t d, h, m, s;
   static char str[12];            // just enough for "00:00:00:00"
@@ -17,7 +17,7 @@ char *Record::getRunTime(){
   h = secs/ 3600; secs %=  3600;  //  3600 secs on a hour
   m = secs/   60; secs %=    60;  //    60 secs on a minute
   s = secs;                       //     1 secs on a sec
-  sprintf(str, "%02u:%02u:%02u:%02u", d, h, m, s);    
+  sprintf(str, "%02u:%02u:%02u:%02u", d, h, m, s);
   return str;
 }
 

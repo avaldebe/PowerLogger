@@ -62,9 +62,15 @@ void setup() {
 }
 
 void loop() {
+  static uint32_t last = 0;
+  while(millis()-last<DELAY){
+    // do other stuff untill is time for a new Record
+    delay(DELAY/100);
+  }
+  last = millis();
 
   // buffer new data chunk
-  Record* record = new Record(millis());
+  Record* record = new Record(last);
   buffer.unshift(record);
 
   // dump buffer to CSV file
@@ -81,7 +87,4 @@ void loop() {
     }
     CSV.close();
   }
-
-  // wait until next measurement time
-  delay(millis()-record->getTime()+DELAY);
 }
