@@ -32,7 +32,7 @@ void Record::init(Print* out, const char *filename){
   }
   INA.setBusConversion(INA_CONVTIME);     // see config.h for value
   INA.setShuntConversion(INA_CONVTIME);   // see config.h for value
-  INA.setAveraging(INA_SEMPLES);          // see config.h for value
+  INA.setAveraging(INA_SAMPLES);          // see config.h for value
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);  // bus&shunt
 
   out->print(F("INA devices on the I2C bus: "));
