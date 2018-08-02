@@ -6,9 +6,6 @@
 #include <Print.h>
 #include "config.h"                       // project configuration
 
-#include <INA.h>
-extern INA_Class INA;
-
 class Record {
 public:
   Record(){};
@@ -24,6 +21,7 @@ public:
   static char *getRunTime(uint32_t secs);
   inline char *getRunTime(){ return getRunTime(time/1000); }
 
+  static void init(Print* out, const char *filename);
   void header(Print* out);
   void print(Print* out);
   void splash(Print* out, bool header=true, bool footer=true);

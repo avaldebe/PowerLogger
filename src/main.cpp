@@ -32,33 +32,9 @@ void setup() {
     SD.initErrorHalt();                   // errorcode/message to Serial
   }
 
-  uint8_t INAfound = INA.begin(1,100000); // maxBusAmps,microOhmR
-  while (INAfound != INA_COUNT) {
-    Serial.print(F("ERROR: INA devices expected "));
-    Serial.print(INA_COUNT);
-    Serial.print(F(", found "));
-    Serial.println(INAfound);
-    delay(DELAY);
-  }
-  INA.setBusConversion(INA_CONVTIME);     // see config.h for value
-  INA.setShuntConversion(INA_CONVTIME);   // see config.h for value
-  INA.setAveraging(INA_SEMPLES);          // see config.h for value
-  INA.setMode(INA_MODE_CONTINUOUS_BOTH);  // bus&shunt
-
-  Serial.print(F("INA devices on the I2C bus: "));
-  Serial.println(INA_COUNT);
-  for (uint8_t i=0; i<INA_COUNT; i++) {
-    Serial.print(F("ch"));
-    Serial.print(i);
-    Serial.println(INA.getDeviceName(i));
   }
 
-  Serial.print(F("Buffering "));
-  Serial.print(BUFFER_SIZE);
-  Serial.print(F(" records of "));
-  Serial.print(RECORD_SIZE*sizeof(uint32_t));
-  Serial.print(" bytes before writing to SD:");
-  Serial.println(FILENAME);
+  Record::init(&Serial, FILENAME);        // init/config INA devices
 }
 
 void loop() {
