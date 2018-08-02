@@ -33,7 +33,7 @@ void setup() {
   }
 
   uint8_t INAfound = INA.begin(1,100000); // maxBusAmps,microOhmR
-  while(INAfound != INA_COUNT){
+  while (INAfound != INA_COUNT) {
     Serial.print(F("ERROR: INA devices expected "));
     Serial.print(INA_COUNT);
     Serial.print(F(", found "));
@@ -63,14 +63,17 @@ void setup() {
 
 void loop() {
   static uint32_t last = 0;
-  while(millis()-last<DELAY){
+  while (millis()-last<DELAY) {
     // do other stuff untill is time for a new Record
     delay(DELAY/100);
   }
   last = millis();
 
-  // buffer new data chunk
+  // measurements from all INA devices
   Record* record = new Record(last);
+  record->splash(&Serial);
+
+  // buffer new record
   buffer.unshift(record);
 
   // dump buffer to CSV file

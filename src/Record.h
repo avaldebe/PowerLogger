@@ -26,7 +26,7 @@ public:
 
   void header(Print* out);
   void print(Print* out);
-  void splash(Print* out, bool header=false, bool footer=false);
+  void splash(Print* out, bool header=true, bool footer=true);
 
 protected:
   uint32_t time;
