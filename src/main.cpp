@@ -51,9 +51,9 @@ void setup() {
 
 void loop() {
   static uint32_t last = 0;
-  while (millis()-last<DELAY) {
+  while (millis()-last<FREQUENCY) {
     // do other stuff untill is time for a new Record
-    delay(DELAY/100);
+    delay(100);
   }
   last = millis();
 

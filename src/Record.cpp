@@ -28,7 +28,7 @@ void Record::init(Print* out, const char *filename){
     out->print(INA_COUNT);
     out->print(F(", found "));
     out->println(INAfound);
-    delay(DELAY);
+    delay(100);
   }
   INA.setBusConversion(INA_CONVTIME);     // see config.h for value
   INA.setShuntConversion(INA_CONVTIME);   // see config.h for value

@@ -12,7 +12,7 @@ const uint8_t chipSelect = 10;
 // Measurament frequency
 #define INA_CONVTIME  8500             // Maximum conversion time 8.244ms
 #define INA_SEMPLES    128             // Samples in average => ~1 measurement/s
-#define DELAY         5000             // ms between measurements
+#define FREQUENCY     5000             // ms between measurements
 
 // Measurement array and buffer size
 #ifndef INA_COUNT                      // Number if INA devices
