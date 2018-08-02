@@ -9,12 +9,12 @@
   #ifndef BUILD_TIME
   #error "Missing BUILD_TIME flag, try agail with -DBUILD_TIME=$UNIX_TIME"
   #endif
-  void rtc_begin(Print* out);
+  void rtc_init(Print* out);
   uint32_t rtc_now();
   uint32_t rtc_now(uint32_t time);
   char *rtc_fmt(const char fmt);
 #else
-  void rtc_begin(Print* out){};
+  void rtc_init(Print* out){};
   void rtc_now(){};
 #endif
 

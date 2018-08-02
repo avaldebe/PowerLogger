@@ -21,7 +21,7 @@
   static uint32_t unixtime;
 #endif
 
-void rtc_begin(Print* out){
+void rtc_init(Print* out){
   if(rtc_now()<BUILD_TIME){
     rtc_now(BUILD_TIME);
     out->print(F("Set RTC to built time: "));
