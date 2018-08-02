@@ -21,7 +21,9 @@ public:
   inline float getVolts(uint8_t i) { return (float)getMilliVolts(i)/1000; }
   inline float getAmps(uint8_t i) { return (float)getMmicroAmps(i)/1000000; }
 
-  char *getRunTime();
+  static char *getRunTime(uint32_t secs);
+  inline char *getRunTime(){ return getRunTime(time/1000); }
+
   void header(Print* out);
   void print(Print* out);
   void splash(Print* out, bool header=false, bool footer=false);
