@@ -26,9 +26,13 @@ void Record::print(Print* out) {
   out->println();
 }
 
-void Record::splash(Print* out) {
-              //1  23.000  1.000
-  out->print(F("#   V [V]  I [A]"));
+void Record::splash(Print* out, bool header) {
+  if(header){
+    out->print(F("rec: ~"));
+    out->print(getRecs());
+    //           "1  23.000  1.000"
+    out->print(F("#   V [V]  I [A]"));
+  }
   for (uint8_t i=0; i<INA_COUNT; i++) {
     out->print(i);
     out->print(F(": "));
@@ -37,8 +41,6 @@ void Record::splash(Print* out) {
     out->print(F("  "));
     out->println(getAmps(i),3);
   }
-  out->print(F("recs: ~"));
-  out->print(getRecs());
 }
 
 
