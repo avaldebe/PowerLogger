@@ -36,8 +36,13 @@ DS1307, DS3231, PCF8583, PCF8563.
 
 ## Display (optional)
 
-Support for small displays is planed using the [U8x8 constructors][U8x8]
-from the [U8g2 library][U8g2].
+Small displays are supported thanks to the [U8x8 constructors][U8x8]
+from the [U8g2 library][U8g2]. At the moment only 128x64 and 128x32 I2C
+displays are supported.
+
+When a display is present, the print statements that otherwise would go to
+`Serial` are redirected to the display. The INA measurements are displayed
+such that 6 channels fit on a 128x64 display and 2 channels on a 128x32.
 
 ## CSV file
 
