@@ -10,9 +10,10 @@ Change SPI_SPEED to SD_SCK_MHZ(50) for best performance. */
 const uint8_t chipSelect = 10;
 
 // Measurament frequency
-#define INA_CONVTIME  8600             // Maximum conversion time:
+#define INA_CONVTIME  8600             // maximum conversion time [us]:
                                        // 8.510ms on INA219, 8.244ms elsewhere
-#define INA_SAMPLES  (FREQUENCY*1000)/(INA_CONVTIME*2)  // fit FREQUENCY
+#define SAMPLES(frec,conv)  ((uint16_t)frec*1000/(conv*2))
+#define INA_SAMPLES   SAMPLES(FREQUENCY,INA_CONVTIME) // fit FREQUENCY
 #ifndef FREQUENCY                      // ms between measurements
 #define FREQUENCY     1000             // default
 #endif
