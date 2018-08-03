@@ -2,6 +2,9 @@
 #define U8X8util_h
 
 #ifdef HAST_U8X8
+  #ifndef DISPLAY_SIZE
+  #error "Missing DISPLAY_SIZE flag, try again with -DDISPLAY_SIZE=12864"
+  #endif
   #include <U8x8lib.h>
   extern U8X8LOG u8x8log;
 
