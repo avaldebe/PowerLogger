@@ -1,24 +1,33 @@
 #ifdef HAST_RTC
 #include "RTCutil.h"
 
-#ifdef __STM32F1__
+#if   HAST_RTC == 32768  || HAST_RTC == 62500
+  #ifndef __STM32F1__
+  #error "Internal RTC options only for STM32F1"
+  #endif
   #include <RTClock.h>                    // builtin RTC
-  static RTClock rtc(RTCSEL_LSE);         // initialise clock source
+  #if   HAST_RTC == 32768                 // esternal clock: 32768 Hz cristal
+    static RTClock rtc(RTCSEL_LSE);
+  #elif HAST_RTC == 62500                 // internal clock: 8 MHz/128 (62500 Hz)
+    static RTClock rtc(RTCSEL_HSE);
+  #endif
   static tm_t now;
   static uint32_t unixtime;
-#else
+#elif HAST_RTC == 1307 || HAST_RTC == 3231 || HAST_RTC == 8583 || HAST_RTC == 8563
   #include <RTClib.h>                     // External RTC
-#if   HAST_RTC == DS1307
-  static RTC_DS1307 rtc;
-#elif HAST_RTC == DS3231
-  static RTC_DS3231 rtc;
-#elif HAST_RTC == PCF8583
-  static RTC_PCF8583 rtc;
-#elif HAST_RTC == PCF8563
-  static RTC_PCF8563 rtc;
-#endif
+  #if   HAST_RTC == 1307
+    static RTC_DS1307 rtc;
+  #elif HAST_RTC == 3231
+    static RTC_DS3231 rtc;
+  #elif HAST_RTC == 8583
+    static RTC_PCF8583 rtc;
+  #elif HAST_RTC == 8563
+    static RTC_PCF8563 rtc;
+  #endif
   static DateTime now;
   static uint32_t unixtime;
+#else
+  #error "Unknown RTC option"
 #endif
 
 void rtc_init(Print* out){
