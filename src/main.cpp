@@ -38,22 +38,7 @@ File CSV;                                 // File object for filename
 #else
   #define TERNIMAL Serial
 #endif
-
-void sd_dump(){
-  if (buffer.isEmpty()) { return; }
-  
-  rtc_now();    // new date for filename
-  bool newfile = !SD.exists(FILENAME);
-  CSV = SD.open(FILENAME, FILE_WRITE);
-  if (!CSV) { SD.initErrorHalt(&TERNIMAL); } // errorcode/message to TERNIMAL
-  if (newfile){
-    buffer.first()->header(&CSV);
-  }
-  while (!buffer.isEmpty()) {
-    buffer.shift()->print(&CSV);
-  }
-  CSV.close();  
-}
+void sd_dump();
 
 #include <OneButton.h>
 #ifndef BUTTON_PIN
@@ -62,30 +47,10 @@ void sd_dump(){
 OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
 
 bool recording = false;                   // off when starting
-void recording_toggle(){
-  if (recording) { sd_dump(); }           // dump buffer to SD card
-  recording = not recording;              // pause/resume buffering
-  TERNIMAL.print(F("SD recording "));
-  TERNIMAL.println((recording)?F("resumed"):F("paused"));
-}
-void safe_shutdown(){
-  TERNIMAL.println(F("Safe shutdown started"));
-  sd_dump();                              // dump buffer to SD card
-  recording = false;                      // pause buffering
-#ifdef HAS_SOFTPOWER
-  TERNIMAL.println(F("Powering down"));
-  pinMode(BUTTON_PIN, OUTPUT);
-  digitalWrite(BUTTON_PIN, LOW);
-#else
-  TERNIMAL.println(F("You can now safely remove power"));
-#endif
-}
-
+void recording_toggle();
+void safe_shutdown();
 #ifdef BACKLIGHT_PIN
-void backlight_toggle(){
-  // display backlight attached/controlled by BACKLIGHT_PIN
-  digitalWrite(BACKLIGHT_PIN, (digitalRead(BACKLIGHT_PIN)==HIGH)?LOW:HIGH);
-}
+void backlight_toggle();
 #endif
 
 void setup() {
@@ -132,6 +97,48 @@ void loop() {
     if (buffer.isFull()) { sd_dump(); }   // dump buffer to CSV file
   } else {
     TERNIMAL.println(F("Short press to resume SD recording"));
-  }
-  
+  }  
 }
+
+void sd_dump(){
+  if (buffer.isEmpty()) { return; }
+  
+  rtc_now();    // new date for filename
+  bool newfile = !SD.exists(FILENAME);
+  CSV = SD.open(FILENAME, FILE_WRITE);
+  if (!CSV) { SD.initErrorHalt(&TERNIMAL); } // errorcode/message to TERNIMAL
+  if (newfile){
+    buffer.first()->header(&CSV);
+  }
+  while (!buffer.isEmpty()) {
+    buffer.shift()->print(&CSV);
+  }
+  CSV.close();  
+}
+
+void recording_toggle(){
+  if (recording) { sd_dump(); }           // dump buffer to SD card
+  recording = not recording;              // pause/resume buffering
+  TERNIMAL.print(F("SD recording "));
+  TERNIMAL.println((recording)?F("resumed"):F("paused"));
+}
+
+void safe_shutdown(){
+  TERNIMAL.println(F("Safe shutdown started"));
+  sd_dump();                              // dump buffer to SD card
+  recording = false;                      // pause buffering
+#ifdef HAS_SOFTPOWER
+  TERNIMAL.println(F("Powering down"));
+  pinMode(BUTTON_PIN, OUTPUT);
+  digitalWrite(BUTTON_PIN, LOW);
+#else
+  TERNIMAL.println(F("You can now safely remove power"));
+#endif
+}
+
+#ifdef BACKLIGHT_PIN
+void backlight_toggle(){
+  // display backlight attached/controlled by BACKLIGHT_PIN
+  digitalWrite(BACKLIGHT_PIN, (digitalRead(BACKLIGHT_PIN)==HIGH)?LOW:HIGH);
+}
+#endif

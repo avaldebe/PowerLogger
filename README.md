@@ -72,8 +72,8 @@ A long press will write buffet to the SD card and power down the logger.
 A subsequent single press will power up the logger.
 
 A double press will switch on/off the display backlight, if applicable.
-The [shutdown circuit][softpower] can be be used to connect/disconnect
-the display backlight power pin.
+The switching part of the [shutdown circuit][softpower] (P/N channel MOSFETS)
+can be be used to connect/disconnect the display backlight power pin.
 
 ## Install libraries on PlatformIO
 ```bash
