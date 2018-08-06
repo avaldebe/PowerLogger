@@ -5,7 +5,6 @@ Inspired by the Power-Meter/Logger project by [GreatScott][],
 this project is built around the [INA library][INAlib].
 
 ## INAxxx devices
-
 The [INA library][INAlib], allows access to multiple INA219/INA226/INA3221 devices.
 As long as each device has a different I2C address, the library will
 auto discover them and store the device type and relevant configuration on the microcontroller's EEPROM.
@@ -21,7 +20,7 @@ The [fork][INAfork] address this issue.
 The patches introduced by the `INAfork` have been submitted for integration, and will hopefully integrated to `INAlib`.
 
 ## Buffered SD card
-SD card support is povided by the [SdFat library][SdFat].
+SD card support is provided by the [SdFat library][SdFat].
 The [CircularBuffer library][Buffer] provides the buffer for the measurements.
 
 ## Builtin RTC (STM32F1)
@@ -35,7 +34,6 @@ The following external RTCs are supported via the [RTClib library][RTClib]:
 DS1307, DS3231, PCF8583, PCF8563.
 
 ## Display (optional)
-
 Small displays are supported thanks to the [U8x8 constructors][U8x8]
 from the [U8g2 library][U8g2]. At the moment only 128x64 and 128x32 I2C
 displays are supported.
@@ -45,7 +43,6 @@ When a display is present, the print statements that otherwise would go to
 such that 6 channels fit on a 128x64 display and 2 channels on a 128x32.
 
 ## CSV file
-
 Voltage and current measurements are not written directly to the SD card.
 They are temporarily sotred on a circular.
 
