@@ -56,41 +56,37 @@ void sd_dump(){
 }
 
 #include <OneButton.h>
-#ifndef TACT_BUTTON
-  #error "Undefined TACT_BUTTON flag. Try with -DTACT_BUTTON=3"
+#ifndef BUTTON_PIN
+  #error "Undefined BUTTON_PIN flag. Try with -DBUTTON_PIN=3"
 #endif
-OneButton button(TACT_BUTTON, true);      // INPUT_PULLUP
+OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
 
 bool recording = false;                   // off when starting
 void recording_toggle(){
   if (recording) { sd_dump(); }           // dump buffer to SD card
   recording = not recording;              // pause/resume buffering
+  TERNIMAL.print(F("SD recording "));
+  TERNIMAL.println((recording)?F("resumed"):F("paused"));
 }
-
-void backlight_toggle(){
-#ifdef HAS_BACKLIGHT
-  static bool backlight = false;          // true when starting  
-  backlight = not backlight;
-  if (backlight) {
-    // something
-  } else {
-    // something    
-  }
-#endif
-}
-
 void safe_shutdown(){
   TERNIMAL.println(F("Safe shutdown started"));
   sd_dump();                              // dump buffer to SD card
   recording = false;                      // pause buffering
 #ifdef HAS_SOFTPOWER
   TERNIMAL.println(F("Powering down"));
-  pinMode(TACT_BUTTON, OUTPUT);
-  digitalWrite(TACT_BUTTON, LOW);
+  pinMode(BUTTON_PIN, OUTPUT);
+  digitalWrite(BUTTON_PIN, LOW);
 #else
   TERNIMAL.println(F("You can now safely remove power"));
 #endif
 }
+
+#ifdef BACKLIGHT_PIN
+void backlight_toggle(){
+  // display backlight attached/controlled by BACKLIGHT_PIN
+  digitalWrite(BACKLIGHT_PIN, (digitalRead(BACKLIGHT_PIN)==HIGH)?LOW:HIGH);
+}
+#endif
 
 void setup() {
   Serial.begin(57600);                    // for ATmega328p 3.3V 8Mhz
@@ -105,8 +101,14 @@ void setup() {
   Record::init(&TERNIMAL, FILENAME);      // init/config INA devices
   
   button.attachClick(recording_toggle);        // pause/resume buffering
-  button.attachDoubleClick(backlight_toggle);  // switch backlight on/off
   button.attachLongPressStart(safe_shutdown);  // dump buffen and power down
+  
+#ifdef BACKLIGHT_PIN
+  // display backlight attached/controlled by BACKLIGHT_PIN
+  pinMode(BACKLIGHT_PIN, OUTPUT);
+  digitalWrite(BACKLIGHT_PIN, LOW);            // no backlight
+  button.attachDoubleClick(backlight_toggle);  // switch backlight on/off
+#endif
 }
 
 void loop() {
@@ -123,11 +125,12 @@ void loop() {
   Record* record = new Record(last);
   record->splash(&TERNIMAL);
 
-  // buffer new record
-  if (recording) { buffer.unshift(record); }
-
-  // dump buffer to CSV file
-  if (buffer.isFull()) { sd_dump(); }
+  if (recording) {
+    buffer.unshift(record);               // buffer new record
+    if (buffer.isFull()) { sd_dump(); }   // dump buffer to CSV file
+  } else {
+    TERNIMAL.println(F("Short press to resume SD recording"));
+  }
   
   // press while reading/writing do not count (????)
   button.reset();
