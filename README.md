@@ -55,13 +55,34 @@ The INA devices are ordered according to their I2C address.
 When the buffer is full, each `Record` is written to the SD card
 as a single line on a CSV file.
 
+## Single button pause/resume/shutdown
+Besides debouncing, the [OneButton library][OneButton] provides
+multiple functionality with a single tact button:
+- short press: pause/resume recording
+- long press: safe shutdown
+- double press: display backlight (if applicable)
+
+Short press will toggle pause/resume recording to the SD card.
+The contents of the buffer are written to the SD card before pausing.
+Measurements will continue, but they will not be saved to the buffer
+until recording is resumed.
+
+Safe shutdown can be implemented with [additional circuitry][softpower].
+A long press will write buffet to the SD card and power down the logger.
+A subsequent single press will power up the logger.
+
+A double press will switch on/off the display backlight, if applicable.
+For displays with analog controlled backlight, the [shutdown circuit][softpower]
+can be be used to connect/disconnect the display backlight.
+No support circuitry is required for displays with digitally controlled backlight.
+
 ## Install libraries on PlatformIO
 ```bash
 # get INA fork library to lib/INA/
 git submodule init lib/INA/
 
 # global install, so it can be used on other projects
-pio lib --global install SdFat CircularBuffer
+pio lib --global install SdFat CircularBuffer OneButton
 
 # external RTC (optional)
 pio lib --global install RTClib
@@ -72,11 +93,14 @@ pio lib --global install U8g2
 
 [GreatScott]: https://www.instructables.com/id/Make-Your-Own-Power-MeterLogger/
 [bluepill]:   https://wiki.stm32duino.com/index.php?title=Blue_Pill
+[softpower]:  http://www.mosaic-industries.com/embedded-systems/microcontroller-projects/electronic-circuits/push-button-switch-turn-on/microcontroller-latching-on-off
+
 
 [INAlib]:  https://github.com/SV-Zanshin/INA
 [INAfork]: https://github.com/avaldebe/INA/tree/stm32f1
 [SdFat]:   https://github.com/greiman/SdFat
 [Buffer]:  https://github.com/rlogiacco/CircularBuffer
+[OneButton]: https://github.com/mathertel/OneButton
 [RTClib]:  https://github.com/adafruit/RTClib
 [U8g2]:    https://github.com/olikraus/u8g2
 [U8x8]:    https://github.com/olikraus/u8g2/wiki/u8x8reference
