@@ -99,9 +99,11 @@ void setup() {
   }
 
   Record::init(&TERNIMAL, FILENAME);      // init/config INA devices
-  
-  button.attachClick(recording_toggle);        // pause/resume buffering
-  button.attachLongPressStart(safe_shutdown);  // dump buffen and power down
+
+  button.setClickTicks(SHORTPRESS);       // single press duration [ms]
+  button.attachClick(recording_toggle);   // pause/resume buffering
+  button.setPressTicks(LONGPRESS);        // long press duration [ms]
+  button.attachPress(safe_shutdown);      // dump buffen and power down
   
 #ifdef BACKLIGHT_PIN
   // display backlight attached/controlled by BACKLIGHT_PIN
@@ -132,6 +134,4 @@ void loop() {
     TERNIMAL.println(F("Short press to resume SD recording"));
   }
   
-  // press while reading/writing do not count (????)
-  button.reset();
 }

@@ -17,6 +17,13 @@ const uint8_t chipSelect = 10;
 #ifndef FREQUENCY                      // ms between measurements
 #define FREQUENCY     1000             // default
 #endif
+#ifndef SHORTPRESS                     // ms single press diration
+#define SHORTPRESS     100             // default
+#endif
+#ifndef LONGPRESS                      // ms long press duration
+#define LONGPRESS      500             // default
+#endif
+
 
 // Measurement array and buffer size
 #ifndef INA_COUNT                      // Number if INA devices
