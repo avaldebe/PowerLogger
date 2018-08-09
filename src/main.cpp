@@ -101,7 +101,7 @@ void loop() {
 }
 
 void sd_dump(){
-  if (buffer.isEmpty()) { return; }
+  if (buffer.isEmpty()) { return; }       // nothing to write
   
   rtc_now();    // new date for filename
   bool newfile = !SD.exists(FILENAME);
@@ -130,7 +130,7 @@ void safe_shutdown(){
 #ifdef HAS_SOFTPOWER
   TERNIMAL.println(F("Powering down"));
   pinMode(BUTTON_PIN, OUTPUT);
-  digitalWrite(BUTTON_PIN, LOW);
+  digitalWrite(BUTTON_PIN, LOW);         // trigger shutdown circuitry
 #else
   TERNIMAL.println(F("You can now safely remove power"));
 #endif
