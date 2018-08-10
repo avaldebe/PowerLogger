@@ -24,8 +24,12 @@ static const uint8_t height= (DISPLAY_SIZE%100)/8;
   U8X8_SH1106_128X64_NONAME_HW_I2C      u8x8(reset);
 //U8X8_SH1106_128X64_VCOMH0_HW_I2C      u8x8(reset);
 //U8X8_SH1106_128X64_WINSTAR_HW_I2C     u8x8(reset);
-#elif HAST_U8X8 == 1107 && DISPLAY_SIZE == 128128
-  U8X8_SH1107_128X128_HW_I2C            u8x8(reset);
+#elif HAST_U8X8 == 1701 && DISPLAY_SIZE == 12864
+//U8X8_UC1701_MINI12864_4W_HW_SPI     u8x8(SS , MOSI, reset);
+  U8X8_UC1701_MINI12864_2ND_4W_HW_SPI u8x8(SS1, MOSI, reset);
+#elif HAST_U8X8 == 8544 && DISPLAY_SIZE ==  8448  //  Nokia 5110 LCD
+//U8X8_PCD8544_84X48_4W_HW_SPI     u8x8(SS , MOSI , reset);
+  U8X8_PCD8544_84X48_2ND_4W_HW_SPI u8x8(SS1, MOSI1, reset);
 #else
   #error "Unknown U8X8 display"
 #endif
