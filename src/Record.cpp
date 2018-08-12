@@ -13,7 +13,7 @@ Record::Record(uint32_t time): time(time) {
 
 char *Record::getRunTime(uint32_t s){
   uint8_t d, h, m;
-  static char str[12];      // just enough for "00:00:00:00"
+  static char str[16];      // just enough for "00:00:00:00"
   d = s/86400; s %= 86400;  // 86400 secs on a day
   h = s/ 3600; s %=  3600;  //  3600 secs on a hour
   m = s/   60; s %=    60;  //    60 secs on a minute
@@ -42,7 +42,7 @@ void Record::init(Print* out, const char *filename){
     out->print(i);
     out->println(INA.getDeviceName(i));
   }
-  
+
   out->print(F("Buffering "));
   out->print(BUFFER_SIZE);
   out->print(F(" records of "));
