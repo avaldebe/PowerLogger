@@ -12,7 +12,7 @@ Based on
 
 - Terminal example from the U8g2 library
   https://github.com/olikraus/u8g2/
-  
+
 - BlinkMachine esmaple from the OneButton library
   https://github.com/mathertel/OneButton
 */
@@ -25,14 +25,14 @@ Based on
 SdFat SD;                                 // File system object.
 File CSV;                                 // File object for filename
 
-#include "RTCutil.h"
+#include <RTCutil.h>
 #ifdef HAST_RTC
   #define FILENAME rtc_fmt('C')           // 'YYMMDD.csv'
 #else
   #define FILENAME "INA.csv"
 #endif
 
-#include "U8X8util.h"
+#include <U8X8util.h>
 #ifdef HAST_U8X8
   #define TERNIMAL u8x8log
 #else
@@ -69,7 +69,7 @@ void setup() {
   button.attachClick(recording_toggle);   // pause/resume buffering
   button.setPressTicks(LONGPRESS);        // long press duration [ms]
   button.attachPress(safe_shutdown);      // dump buffen and power down
-  
+
 #ifdef BACKLIGHT_PIN
   // display backlight attached/controlled by BACKLIGHT_PIN
   pinMode(BACKLIGHT_PIN, OUTPUT);
@@ -97,12 +97,12 @@ void loop() {
     if (buffer.isFull()) { sd_dump(); }   // dump buffer to CSV file
   } else {
     TERNIMAL.println(F("Short press to resume SD recording"));
-  }  
+  }
 }
 
 void sd_dump(){
   if (buffer.isEmpty()) { return; }       // nothing to write
-  
+
   rtc_now();    // new date for filename
   bool newfile = !SD.exists(FILENAME);
   CSV = SD.open(FILENAME, FILE_WRITE);
@@ -113,7 +113,7 @@ void sd_dump(){
   while (!buffer.isEmpty()) {
     buffer.shift()->print(&CSV);
   }
-  CSV.close();  
+  CSV.close();
 }
 
 void recording_toggle(){
