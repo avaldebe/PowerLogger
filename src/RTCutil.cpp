@@ -45,7 +45,7 @@ void rtc_init(Print* out){
 }
 
 uint32_t rtc_now(){
-#ifdef __STM32F1__
+#if   HAST_RTC == 32768  || HAST_RTC == 62500
   rtc.getTime(now);
   unixtime = rtc.getTime();
 #else
@@ -56,7 +56,7 @@ uint32_t rtc_now(){
 }
 
 uint32_t rtc_now(uint32_t time){
-#ifdef __STM32F1__
+#if   HAST_RTC == 32768  || HAST_RTC == 62500
   rtc.setTime(time);
 #else
   rtc.adjust(DateTime(time));
@@ -67,7 +67,7 @@ uint32_t rtc_now(uint32_t time){
 char *rtc_fmt(const char fmt){
   static char str[16];
   switch (fmt) {
-#ifdef __STM32F1__
+#if   HAST_RTC == 32768  || HAST_RTC == 62500
   case 'D': // long date
     sprintf(str, "%04u-%02u-%02u", 2000+now.year, now.month, now.day);
     break;

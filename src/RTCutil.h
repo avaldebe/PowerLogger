@@ -15,7 +15,7 @@
   char *rtc_fmt(const char fmt);
 #else
   void rtc_init(Print* out){};
-  void rtc_now(){};
+  uint32_t rtc_now(){ return 0; };
 #endif
 
 #endif
