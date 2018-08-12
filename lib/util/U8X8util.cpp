@@ -2,7 +2,7 @@
 #include "U8X8util.h"
 
 static const uint8_t reset = U8X8_PIN_NONE;
-static const uint8_t width = (DISPLAY_SIZE/100)/8; 
+static const uint8_t width = (DISPLAY_SIZE/100)/8;
 static const uint8_t height= (DISPLAY_SIZE%100)/8;
 
 #if   HAST_U8X8 == 1305 && DISPLAY_SIZE == 12864
@@ -37,11 +37,11 @@ static const uint8_t height= (DISPLAY_SIZE%100)/8;
 static uint8_t u8log_buffer[width*height];
 U8X8LOG u8x8log;
 
-void u8x8_begin(){
+void u8x8_begin(uint8_t mode){
   u8x8.begin();
   u8x8.setFont(u8x8_font_chroma48medium8_r);
-  
+
   u8x8log.begin(u8x8, width, height, u8log_buffer);
-  u8x8log.setRedrawMode(0);		// 0: Update screen with newline, 1: Update screen for every char  
+  u8x8log.setRedrawMode(mode);		// 0: Update screen with newline, 1: Update screen for every char
 }
 #endif

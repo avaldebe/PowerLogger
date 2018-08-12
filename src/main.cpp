@@ -57,6 +57,7 @@ void setup() {
   Serial.begin(57600);                    // for ATmega328p 3.3V 8Mhz
   while(!Serial){ SysCall::yield(); }     // Wait for USB Serial
 
+  u8x8_begin();                           // start TERNIMAL
   rtc_init(&TERNIMAL);                    // update RTC if needed
 
   if (!SD.begin(chipSelect, SPI_SPEED)) {
