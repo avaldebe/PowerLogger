@@ -54,10 +54,12 @@ void backlight_toggle();
 #endif
 
 void setup() {
+#ifdef HAST_U8X8
+  u8x8_begin();                           // start TERNIMAL
+#else
   Serial.begin(57600);                    // for ATmega328p 3.3V 8Mhz
   while(!Serial){ SysCall::yield(); }     // Wait for USB Serial
-
-  u8x8_begin();                           // start TERNIMAL
+#endif
   rtc_init(&TERNIMAL);                    // update RTC if needed
 
   if (!SD.begin(chipSelect, SPI_SPEED)) {
