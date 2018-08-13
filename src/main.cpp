@@ -49,9 +49,6 @@ OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
 bool recording = false;                   // off when starting
 void recording_toggle();
 void safe_shutdown();
-#ifdef BACKLIGHT_PIN
-void backlight_toggle();
-#endif
 
 void setup() {
 #ifdef HAST_U8X8
@@ -72,13 +69,7 @@ void setup() {
   button.attachClick(recording_toggle);   // pause/resume buffering
   button.setPressTicks(LONGPRESS);        // long press duration [ms]
   button.attachPress(safe_shutdown);      // dump buffen and power down
-
-#ifdef BACKLIGHT_PIN
-  // display backlight attached/controlled by BACKLIGHT_PIN
-  pinMode(BACKLIGHT_PIN, OUTPUT);
-  digitalWrite(BACKLIGHT_PIN, LOW);            // no backlight
-  button.attachDoubleClick(backlight_toggle);  // switch backlight on/off
-#endif
+  button.attachDoubleClick(u8x8_toggle);  // switch backlight/display on/off
 }
 
 void loop() {
@@ -138,10 +129,3 @@ void safe_shutdown(){
   TERNIMAL.println(F("You can now safely remove power"));
 #endif
 }
-
-#ifdef BACKLIGHT_PIN
-void backlight_toggle(){
-  // display backlight attached/controlled by BACKLIGHT_PIN
-  digitalWrite(BACKLIGHT_PIN, (digitalRead(BACKLIGHT_PIN)==HIGH)?LOW:HIGH);
-}
-#endif

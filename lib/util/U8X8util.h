@@ -10,9 +10,11 @@
 
   void u8x8_begin(uint8_t mode=0);  // 0: Update screen with newline, 1: Update screen for every char
   inline void u8x8_clean(){ u8x8log.print("\f"); } // \f = form feed: clear the screen
+  void u8x8_toggle();
 #else
   inline void u8x8_begin(uint8_t mode=0){};
   inline void u8x8_clean(){};
+  inline void u8x8_toggle(){};
 #endif
 
 #endif

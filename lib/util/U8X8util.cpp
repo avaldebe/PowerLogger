@@ -44,6 +44,26 @@ void u8x8_begin(uint8_t mode){
   u8x8.setFont(u8x8_font_chroma48medium8_r);
 
   u8x8log.begin(u8x8, width, height, u8log_buffer);
-  u8x8log.setRedrawMode(mode);		// 0: Update screen with newline, 1: Update screen for every char
+  // Update screen (mode): 0 with newline, 1 for every char
+  u8x8log.setRedrawMode(mode);
+
+#ifdef BACKLIGHT_PIN
+  // display backlight attached/controlled by BACKLIGHT_PIN
+  pinMode(BACKLIGHT_PIN, OUTPUT);
+  digitalWrite(BACKLIGHT_PIN, HIGH);  // backlight on
+#endif
 }
+
+void u8x8_toggle() {
+  static bool is_on = true;           // backlight on
+  is_on ^= true; // same as !is_on 
+#ifdef BACKLIGHT_PIN
+  // display backlight attached/controlled by BACKLIGHT_PIN
+  digitalWrite(BACKLIGHT_PIN, is_on?HIGH:LOW);
+#else
+  // enable (1) or disable (0) power save mode for the display
+  u8x8.setPowerSave(is_on?0:1);
+#endif
+}
+
 #endif
