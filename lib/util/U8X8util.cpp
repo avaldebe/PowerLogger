@@ -1,7 +1,7 @@
 #ifdef HAST_U8X8
 #include "U8X8util.h"
 
-static const uint8_t reset = U8X8_PIN_NONE;
+static const uint8_t reset = U8X8_PIN_NONE; // triger the right U8X8 constructor
 static const uint8_t width = (DISPLAY_SIZE >> 8  ) >> 3; // same as (DISPLAY_SIZE/256)/8
 static const uint8_t height= (DISPLAY_SIZE & 0xFF) >> 3; // same as (DISPLAY_SIZE%256)/8
 
@@ -56,7 +56,7 @@ void u8x8_begin(uint8_t mode){
 
 void u8x8_toggle() {
   static bool is_on = true;           // backlight on
-  is_on ^= true; // same as !is_on 
+  is_on ^= true; // same as !is_on
 #ifdef BACKLIGHT_PIN
   // display backlight attached/controlled by BACKLIGHT_PIN
   digitalWrite(BACKLIGHT_PIN, is_on?HIGH:LOW);
