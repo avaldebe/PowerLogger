@@ -56,55 +56,45 @@ void test_RTC(void) {
 #endif
 }
 
-bool singlePress = false; void setSinglePress(void) { singlePress = true; }
-bool doublePress = false; void setDoublePress(void) { doublePress = true; }
-bool longPress   = false; void setLongPress(void)   { longPress   = true; }
-
-void test_UI(void) {
-  u8x8_begin();                           // start TERNIMAL
-  uint32_t last;
-
-  TERNIMAL(F("singlePress"));
+enum Press { NoPress, SinglePress, DoublePress, LongPress } press = NoPress;
+void setSinglePress(void) { press = SinglePress; }
+void setDoublePress(void) { press = DoublePress; }
+void setLongPress(void)   { press = LongPress; }
+void button_wait(uint16_t wait_ms=1000) { // 1 sec max, by default
+  press = NoPress;
   button.reset();
-  last = millis();
-  while (millis()-last<1000) {  // 1 sec max
-    if (singlePress) { break; } // exit loop
+  uint32_t start = millis();
+  while ((press==NoPress) && (millis()-start<wait_ms)) { 
     button.tick();
     delay(10);
   }
-  TEST_ASSERT_MESSAGE(singlePress, "No singlePress detected");
-
-  TERNIMAL(F("doublePress"));
-  button.reset();
-  last = millis();
-  while (millis()-last<1000) {  // 1 sec max
-    if (doublePress) { break; } // exit loop
-    button.tick();
-    delay(10);
-  }
-  TEST_ASSERT_MESSAGE(doublePress, "No doublePress detected");
-
-  TERNIMAL(F("longPress"));
-  button.reset();
-  last = millis();
-  while (millis()-last<1000) {  // 1 sec max
-    if (longPress) { break; }   // exit loop
-    button.tick();
-    delay(10);
-  }
-  TEST_ASSERT_MESSAGE(longPress, "No longPress detected");
-
-  u8x8_clean();
 }
 
-
-void setup() {
+void test_UI(void) {
+  u8x8_begin();                             // start TERNIMAL
   button.setClickTicks(SHORTPRESS);         // single press duration [ms]
   button.setPressTicks(LONGPRESS);          // long press duration [ms]
   button.attachClick(setSinglePress);       // single press
   button.attachDoubleClick(setDoublePress); // double press
   button.attachPress(setLongPress);         // long press
 
+  TERNIMAL(F("SinglePress"));
+  button_wait();
+  TEST_ASSERT_MESSAGE(press==SinglePress, "No SinglePress detected");
+
+  TERNIMAL(F("DoublePress"));
+  button_wait();
+  TEST_ASSERT_MESSAGE(press==DoublePress, "No DoublePress detected");
+
+  TERNIMAL(F("LongPress"));
+  button_wait();
+  TEST_ASSERT_MESSAGE(press==LongPress, "No LongPress detected");
+
+  u8x8_clean();
+}
+
+
+void setup() {
   while(millis()<2000) { delay(10); }       // ensure Serial is available
   UNITY_BEGIN();
 
