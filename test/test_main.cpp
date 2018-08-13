@@ -50,7 +50,7 @@ void test_SD(void) {
 void test_RTC(void) {
 #ifdef HAST_RTC
   if(rtc_now()<BUILD_TIME){ rtc_now(BUILD_TIME); } // set RTC if needed
-  TEST_ASSERT_LESS_THAN_MESSAGE(BUILD_TIME, rtc_now(), "Stale RTC");
+  TEST_ASSERT_LESS_OR_EQUAL_MESSAGE(BUILD_TIME, rtc_now(), "Stale RTC");
 #else
   TEST_IGNORE_MESSAGE("No RTC, skip test")
 #endif
