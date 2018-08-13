@@ -15,6 +15,8 @@ INA_Class INA;
 
 #include <SdFat.h>
 SdFat SD;                                 // File system object.
+File TEST;                                // File object for filename
+const char *FILENAME = "test.123";
 
 #include <OneButton.h>
 OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
@@ -35,6 +37,14 @@ void test_INA(void) {
 
 void test_SD(void) {
   TEST_ASSERT_MESSAGE(SD.begin(chipSelect, SPI_SPEED), "SD.begin");
+
+  TEST = SD.open(FILENAME, FILE_WRITE);
+  TEST_ASSERT_MESSAGE(TEST, "SD.open");
+  
+  TEST.println(F("Testing 1,2,3"));
+  TEST.close();
+  TEST_ASSERT_MESSAGE(SD.exists(FILENAME), "SD.exists");
+  TEST_ASSERT_MESSAGE(SD.remove(FILENAME), "SD.remove");
 }
 
 void test_RTC(void) {
