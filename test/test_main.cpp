@@ -3,11 +3,11 @@
 
 #include "../src/config.h"                // project configuration
 #include <RTCutil.h>                      // internal/external RTC
-#include <U8X8util.h>
+#include <TERMutil.h>
 #ifdef HAST_U8X8
-  #define TERNIMAL(msg) u8x8log.println(msg)
+  #define SHOW(msg) TERMINAL.println(msg)
 #else
-  #define TERNIMAL(msg)
+  #define SHOW(msg)
 #endif
 
 #include <INA.h>
@@ -71,26 +71,26 @@ void button_wait(uint16_t wait_ms=1000) { // 1 sec max, by default
 }
 
 void test_UI(void) {
-  u8x8_begin();                             // start TERNIMAL
+  TERMINAL_begin();                             // start TERMINAL
   button.setClickTicks(SHORTPRESS);         // single press duration [ms]
   button.setPressTicks(LONGPRESS);          // long press duration [ms]
   button.attachClick(setSinglePress);       // single press
   button.attachDoubleClick(setDoublePress); // double press
   button.attachPress(setLongPress);         // long press
 
-  TERNIMAL(F("SinglePress"));
+  SHOW(F("SinglePress"));
   button_wait();
   TEST_ASSERT_MESSAGE(press==SinglePress, "No SinglePress detected");
 
-  TERNIMAL(F("DoublePress"));
+  SHOW(F("DoublePress"));
   button_wait();
   TEST_ASSERT_MESSAGE(press==DoublePress, "No DoublePress detected");
 
-  TERNIMAL(F("LongPress"));
+  SHOW(F("LongPress"));
   button_wait();
   TEST_ASSERT_MESSAGE(press==LongPress, "No LongPress detected");
 
-  u8x8_clean();
+  TERMINAL_clean();
 }
 
 

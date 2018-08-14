@@ -32,12 +32,7 @@ File CSV;                                 // File object for filename
   #define FILENAME "INA.csv"
 #endif
 
-#include <U8X8util.h>
-#ifdef HAST_U8X8
-  #define TERNIMAL u8x8log
-#else
-  #define TERNIMAL Serial
-#endif
+#include <TERMutil.h>
 void sd_dump();
 
 #include <OneButton.h>
@@ -51,25 +46,20 @@ void recording_toggle();
 void safe_shutdown();
 
 void setup() {
-#ifdef HAST_U8X8
-  u8x8_begin();                           // start TERNIMAL
-#else
-  Serial.begin(57600);                    // for ATmega328p 3.3V 8Mhz
-  while(!Serial){ SysCall::yield(); }     // Wait for USB Serial
-#endif
-  rtc_init(&TERNIMAL);                    // update RTC if needed
+  TERMINAL_begin();                       // start TERMINAL
+  rtc_init(&TERMINAL);                    // update RTC if needed
 
   if (!SD.begin(chipSelect, SPI_SPEED)) {
-    SD.initErrorHalt(&TERNIMAL);          // errorcode/message to TERNIMAL
+    SD.initErrorHalt(&TERMINAL);          // errorcode/message to TERMINAL
   }
 
-  Record::init(&TERNIMAL, FILENAME);      // init/config INA devices
+  Record::init(&TERMINAL, FILENAME);      // init/config INA devices
 
   button.setClickTicks(SHORTPRESS);       // single press duration [ms]
   button.attachClick(recording_toggle);   // pause/resume buffering
   button.setPressTicks(LONGPRESS);        // long press duration [ms]
   button.attachPress(safe_shutdown);      // dump buffen and power down
-  button.attachDoubleClick(u8x8_toggle);  // switch backlight/display on/off
+  button.attachDoubleClick(TERMINAL_toggle);  // switch backlight/display on/off
 }
 
 void loop() {
@@ -84,13 +74,13 @@ void loop() {
 
   // measurements from all INA devices
   Record* record = new Record(last);
-  record->splash(&TERNIMAL);
+  record->splash(&TERMINAL);
 
   if (recording) {
     buffer.unshift(record);               // buffer new record
     if (buffer.isFull()) { sd_dump(); }   // dump buffer to CSV file
   } else {
-    TERNIMAL.println(F("Short press to resume SD recording"));
+    TERMINAL.println(F("Short press to resume SD recording"));
   }
 }
 
@@ -100,7 +90,7 @@ void sd_dump(){
   rtc_now();    // new date for filename
   bool newfile = !SD.exists(FILENAME);
   CSV = SD.open(FILENAME, FILE_WRITE);
-  if (!CSV) { SD.initErrorHalt(&TERNIMAL); } // errorcode/message to TERNIMAL
+  if (!CSV) { SD.initErrorHalt(&TERMINAL); } // errorcode/message to TERMINAL
   if (newfile){
     buffer.first()->header(&CSV);
   }
@@ -113,19 +103,19 @@ void sd_dump(){
 void recording_toggle(){
   if (recording) { sd_dump(); }           // dump buffer to SD card
   recording = not recording;              // pause/resume buffering
-  TERNIMAL.print(F("SD recording "));
-  TERNIMAL.println((recording)?F("resumed"):F("paused"));
+  TERMINAL.print(F("SD recording "));
+  TERMINAL.println((recording)?F("resumed"):F("paused"));
 }
 
 void safe_shutdown(){
-  TERNIMAL.println(F("Safe shutdown started"));
+  TERMINAL.println(F("Safe shutdown started"));
   sd_dump();                              // dump buffer to SD card
   recording = false;                      // pause buffering
 #ifdef HAS_SOFTPOWER
-  TERNIMAL.println(F("Powering down"));
+  TERMINAL.println(F("Powering down"));
   pinMode(BUTTON_PIN, OUTPUT);
   digitalWrite(BUTTON_PIN, LOW);         // trigger shutdown circuitry
 #else
-  TERNIMAL.println(F("You can now safely remove power"));
+  TERMINAL.println(F("You can now safely remove power"));
 #endif
 }
