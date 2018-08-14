@@ -69,20 +69,38 @@ void Record::print(Print* out) {
   out->println();
 }
 
-void Record::splash(Print* out, bool header, bool footer) {
-  if(header){
-    //           "1  23.000  1.000"
-    out->print(F("#   V [V]  I [A]"));
+void Record::splash(Print* out, uint8_t width, bool header, bool footer) {
+  char str[8];
+  if (width>=16) {
+    //              0123456789ABCDEF
+    //             "1: 23.000  1.000"
+    if (header) {
+      out->print(F("#   V [V] I [A]"));    
+    }
+    for (uint8_t i=0; i<INA_COUNT; i++) {
+      out->print(i);out->print(F(":"));
+      out->print(dtostrf(getVolts(i),7,3,str));
+      out->print(dtostrf(getAmps(i) ,7,3,str));
+    }
+  } else if (header) {
+    //              01234567
+    //             "1 23.00V"
+    //             "1  1.00A"
+    for (uint8_t i=0; i<INA_COUNT; i++) {
+      out->print(i);out->print(dtostrf(getVolts(i),6,2,str));out->print(F("V"));
+      out->print(i);out->print(dtostrf(getAmps(i) ,6,2,str));out->print(F("A"));
+    }
+  } else {
+    //              01234567
+    //             "1 23.000"
+    //             "1  1.000"
+    for (uint8_t i=0; i<INA_COUNT; i++) {
+      out->print(i);out->print(dtostrf(getVolts(i),7,3,str));
+      out->print(i);out->print(dtostrf(getAmps(i) ,7,3,str));
+    }
+    
   }
-  for (uint8_t i=0; i<INA_COUNT; i++) {
-    out->print(i);
-    out->print(F(": "));
-    out->print((milliVolts[i]<10000)?F("   "):F("  "));
-    out->print(getVolts(i),3);
-    out->print(F("  "));
-    out->println(getAmps(i),3);
-  }
-  if(footer){
+  if (footer) {
     out->println(getRunTime());
   }
 }
