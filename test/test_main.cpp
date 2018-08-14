@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Wire.h>
 #include <unity.h>
 
 #include "../src/config.h"                // project configuration
@@ -40,7 +41,7 @@ void test_SD(void) {
 
   TEST = SD.open(FILENAME, FILE_WRITE);
   TEST_ASSERT_MESSAGE(TEST, "SD.open");
-  
+
   TEST.println(F("Testing 1,2,3"));
   TEST.close();
   TEST_ASSERT_MESSAGE(SD.exists(FILENAME), "SD.exists");
@@ -48,11 +49,16 @@ void test_SD(void) {
 }
 
 void test_RTC(void) {
-#ifdef HAST_RTC
-  if(rtc_now()<BUILD_TIME){ rtc_now(BUILD_TIME); } // set RTC if needed
+#ifndef HAST_RTC
+  TEST_IGNORE_MESSAGE("No RTC, skip test")
+#elif   HAST_RTC == 32768  || HAST_RTC == 62500
+  if(rtc_now()<BUILD_TIME){ rtc_now(BUILD_TIME); } // update RTC if needed
   TEST_ASSERT_LESS_OR_EQUAL_MESSAGE(BUILD_TIME, rtc_now(), "Stale RTC");
 #else
-  TEST_IGNORE_MESSAGE("No RTC, skip test")
+  Wire.begin();
+  Wire.beginTransmission(0x68);
+  uint8_t error = Wire.endTransmission();
+  TEST_ASSERT_MESSAGE(error==0, "RTC not found");
 #endif
 }
 
@@ -64,7 +70,7 @@ void button_wait(uint16_t wait_ms=1000) { // 1 sec max, by default
   press = NoPress;
   button.reset();
   uint32_t start = millis();
-  while ((press==NoPress) && (millis()-start<wait_ms)) { 
+  while ((press==NoPress) && (millis()-start<wait_ms)) {
     button.tick();
     delay(10);
   }
@@ -95,7 +101,7 @@ void test_UI(void) {
 
 
 void setup() {
-  while(millis()<2000) { delay(10); }       // ensure Serial is available
+  while (!Serial) { delay(10); }   // wait for USB Serial
   UNITY_BEGIN();
 
   RUN_TEST(test_INA);
