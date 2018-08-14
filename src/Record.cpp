@@ -71,36 +71,29 @@ void Record::print(Print* out) {
 
 void Record::splash(Print* out, uint8_t width, bool header, bool footer) {
   char str[8];
-  if (width>=16) {
-    //              0123456789ABCDEF
-    //             "1: 23.000  1.000"
-    if (header) {
-      out->print(F("#   V [V] I [A]"));    
-    }
-    for (uint8_t i=0; i<INA_COUNT; i++) {
-      out->print(i);out->print(F(":"));
-      out->print(dtostrf(getVolts(i),7,3,str));
-      out->print(dtostrf(getAmps(i) ,7,3,str));
-    }
-  } else if (header) {
-    //              01234567
-    //             "1 23.00V"
-    //             "1  1.00A"
-    for (uint8_t i=0; i<INA_COUNT; i++) {
-      out->print(i);out->print(dtostrf(getVolts(i),6,2,str));out->print(F("V"));
-      out->print(i);out->print(dtostrf(getAmps(i) ,6,2,str));out->print(F("A"));
-    }
-  } else {
-    //              01234567
-    //             "1 23.000"
-    //             "1  1.000"
-    for (uint8_t i=0; i<INA_COUNT; i++) {
-      out->print(i);out->print(dtostrf(getVolts(i),7,3,str));
-      out->print(i);out->print(dtostrf(getAmps(i) ,7,3,str));
-    }
-    
+  switch (width) {
+    case 16 ... 255:  // wide screen. eg 128x64 or 128x32
+      //                          0123456789ABCDEF
+      //                         "1: 23.000  1.000"
+      if (header) { out->print(F("#   V [V] I [A]")); }
+      for (uint8_t i=0; i<INA_COUNT; i++) {
+        out->print(i);out->print(F(":"));
+        out->print(dtostrf(getVolts(i),7,3,str));
+        out->print(dtostrf(getAmps(i) ,7,3,str));
+      }
+    break;
+    case 4 ... 15:  // narrow screem, eg 84X48 or 64X48
+      //              012345678
+      //             "V1 23.000"
+      //             "A1  1.000"
+      header &= width > 6;
+      for (uint8_t i=0; i<INA_COUNT; i++) {
+        if (header) { out->print(F("V")); }
+        out->print(i);out->print(dtostrf(getVolts(i),7,3,str));
+        if (header) { out->print(F("A")); }
+        out->print(i);out->print(dtostrf(getAmps(i) ,7,3,str));
+      }
+    break;
   }
-  if (footer) {
-    out->println(getRunTime());
-  }
+  if (footer) { out->println(getRunTime()); }
 }
