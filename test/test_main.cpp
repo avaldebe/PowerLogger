@@ -84,14 +84,17 @@ void test_UI(void) {
 
   TERMINAL.println(F("SinglePress"));
   button_wait();
+  TERMINAL.println((press==SinglePress)?F("PASS"):F("FAIL!"));
   TEST_ASSERT_MESSAGE(press==SinglePress, "No SinglePress detected");
 
   TERMINAL.println(F("DoublePress"));
   button_wait();
+  TERMINAL.println((press==DoublePress)?F("PASS"):F("FAIL!"));
   TEST_ASSERT_MESSAGE(press==DoublePress, "No DoublePress detected");
 
   TERMINAL.println(F("LongPress"));
   button_wait();
+  TERMINAL.println((press==LongPress)?F("PASS"):F("FAIL!"));
   TEST_ASSERT_MESSAGE(press==LongPress, "No LongPress detected");
 
   TERMINAL_clean();
