@@ -73,7 +73,9 @@ A subsequent single press will power up the logger.
 
 A double press will switch on/off the display backlight, if applicable.
 The switching part of the [shutdown circuit][softpower] (P/N channel MOSFETS)
-can be be used to connect/disconnect the display backlight power pin.
+can be be used to connect/disconnect the display backlight power pin (`BACKLIGHT_PIN` flag).
+If no `BACKLIGHT_PIN` flag is defined, the double press will put the display
+on [power save mode][U8x8].
 
 ## Install libraries on PlatformIO
 ```bash
