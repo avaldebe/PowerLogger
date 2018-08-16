@@ -49,7 +49,7 @@ void setup() {
   TERMINAL_begin();                       // start TERMINAL
   rtc_init(&TERMINAL);                    // update RTC if needed
 
-  if (!SD.begin(chipSelect, SPI_SPEED)) {
+  if (!SD.begin(SD_CS, SPI_SPEED)) {
     SD.initErrorHalt(&TERMINAL);          // errorcode/message to TERMINAL
   }
 

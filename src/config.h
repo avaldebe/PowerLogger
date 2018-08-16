@@ -7,7 +7,9 @@ Reduced SPI speed for breadboards:
 SD_SCK_MHZ(4) will select the highest speed supported by the board under 4 MHz.
 Change SPI_SPEED to SD_SCK_MHZ(50) for best performance. */
 #define SPI_SPEED SD_SCK_MHZ(4)
-const uint8_t chipSelect = 10;
+#ifndef SD_CS
+#define SD_CS SS
+#endif
 
 // Measurament frequency
 #define INA_CONVTIME  8600             // maximum conversion time [us]:

@@ -37,7 +37,7 @@ void test_INA(void) {
 }
 
 void test_SD(void) {
-  TEST_ASSERT_MESSAGE(SD.begin(chipSelect, SPI_SPEED), "SD.begin");
+  TEST_ASSERT_MESSAGE(SD.begin(SD_CS, SPI_SPEED), "SD.begin");
 
   TEST = SD.open(FILENAME, FILE_WRITE);
   TEST_ASSERT_MESSAGE(TEST, "SD.open");
