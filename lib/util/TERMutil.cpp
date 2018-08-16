@@ -56,6 +56,7 @@ void TERMINAL_begin(uint8_t mode){
   TERMINAL.begin(SCREEN, width, height, u8log_buffer);
   // Update screen (mode): 0 with newline, 1 for every char
   TERMINAL.setRedrawMode(mode);
+  TERMINAL_clean();
 
 #ifdef BACKLIGHT_PIN
   // display backlight attached/controlled by BACKLIGHT_PIN
