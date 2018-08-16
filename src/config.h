@@ -10,6 +10,10 @@ Change SPI_SPEED to SD_SCK_MHZ(50) for best performance. */
 #ifndef SD_CS
 #define SD_CS SS
 #endif
+// check fior pin polission with TFT chip select pin
+#if defined DISPLAY_CS && DISPLAY_CS == SD_CS
+  #error "DISPLAY_CS and SD_CS need different SS pins"
+#endif
 
 // Measurament frequency
 #define INA_CONVTIME  8600             // maximum conversion time [us]:

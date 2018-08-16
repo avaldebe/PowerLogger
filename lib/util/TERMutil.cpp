@@ -27,11 +27,21 @@ static const uint8_t height= (DISPLAY_SIZE & 0xFF) >> 3; // same as (DISPLAY_SIZ
 #elif HAST_U8X8 == 1107 && DISPLAY_SIZE == 0x8080
   U8X8_SH1107_128X128_HW_I2C            SCREEN(reset);
 #elif HAST_U8X8 == 1701 && DISPLAY_SIZE == 0x8040
-//U8X8_UC1701_MINI12864_4W_HW_SPI       SCREEN(SS , MOSI , reset);
-  U8X8_UC1701_MINI12864_2ND_4W_HW_SPI   SCREEN(SS1, MOSI1, reset);
+  #if defined DISPLAY_CS                // 1st hardware SPI
+    U8X8_UC1701_MINI12864_4W_HW_SPI     SCREEN(DISPLAY_CS, MOSI, reset);
+  #elif defined SS1 && defined MOSI1    // 2nd hardware SPI
+    U8X8_UC1701_MINI12864_2ND_4W_HW_SPI SCREEN(SS1, MOSI1, reset);
+  #else                                 // default
+    U8X8_UC1701_MINI12864_4W_HW_SPI     SCREEN(SS, MOSI, reset);
+  #endif
 #elif HAST_U8X8 == 8544 && DISPLAY_SIZE == 0x5430  //  Nokia 5110 LCD
-//U8X8_PCD8544_84X48_4W_HW_SPI          SCREEN(SS , MOSI , reset);
-  U8X8_PCD8544_84X48_2ND_4W_HW_SPI      SCREEN(SS1, MOSI1, reset);
+  #if defined DISPLAY_CS                // 1st hardware SPI
+    U8X8_PCD8544_84X48_4W_HW_SPI        SCREEN(DISPLAY_CS, MOSI , reset);
+  #elif defined SS1 && defined MOSI1    // 2nd hardware SPI
+    U8X8_PCD8544_84X48_2ND_4W_HW_SPI    SCREEN(SS1, MOSI1, reset);
+  #else                                 // default
+    U8X8_PCD8544_84X48_4W_HW_SPI        SCREEN(SS, MOSI, reset);
+  #endif
 #else
   #error "Unknown U8X8 display"
 #endif
