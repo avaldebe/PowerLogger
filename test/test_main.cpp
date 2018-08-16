@@ -5,11 +5,6 @@
 #include "../src/config.h"                // project configuration
 #include <RTCutil.h>                      // internal/external RTC
 #include <TERMutil.h>
-#ifdef HAST_U8X8
-  #define SHOW(msg) TERMINAL.println(msg)
-#else
-  #define SHOW(msg)
-#endif
 
 #include <INA.h>
 INA_Class INA;
@@ -77,26 +72,30 @@ void button_wait(uint16_t wait_ms=1000) { // 1 sec max, by default
 }
 
 void test_UI(void) {
-  TERMINAL_begin();                             // start TERMINAL
+#ifndef HAST_U8X8
+  TEST_IGNORE_MESSAGE("No display, skip test")
+#else
+  TERMINAL_begin();                         // start TERMINAL
   button.setClickTicks(SHORTPRESS);         // single press duration [ms]
   button.setPressTicks(LONGPRESS);          // long press duration [ms]
   button.attachClick(setSinglePress);       // single press
   button.attachDoubleClick(setDoublePress); // double press
   button.attachPress(setLongPress);         // long press
 
-  SHOW(F("SinglePress"));
+  TERMINAL.println(F("SinglePress"));
   button_wait();
   TEST_ASSERT_MESSAGE(press==SinglePress, "No SinglePress detected");
 
-  SHOW(F("DoublePress"));
+  TERMINAL.println(F("DoublePress"));
   button_wait();
   TEST_ASSERT_MESSAGE(press==DoublePress, "No DoublePress detected");
 
-  SHOW(F("LongPress"));
+  TERMINAL.println(F("LongPress"));
   button_wait();
   TEST_ASSERT_MESSAGE(press==LongPress, "No LongPress detected");
 
   TERMINAL_clean();
+#endif
 }
 
 
