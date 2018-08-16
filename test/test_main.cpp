@@ -17,43 +17,69 @@ const char *FILENAME = "test.123";
 #include <OneButton.h>
 OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
 
+// PASS/FAIL messages to TERMINAL
+#ifdef HAST_U8X8
+#define TERM(msg) TERMINAL.println(msg)
+#define TEST_TERM(ok, msg) TERMINAL.print((ok)?F(""):F("  Fail!\n")); TEST_ASSERT_MESSAGE(ok, msg)
+#else
+#define TERM(msg)
+#define TEST_TERM(ok, msg) TEST_ASSERT_MESSAGE(ok, msg)
+#endif
+
 void test_INA(void) {
-  TEST_ASSERT_EQUAL_MESSAGE(INA_COUNT, INA.begin(1,100000), "INA devices found");
+  TERM(F("INA count"));
+  uint8_t count = INA.begin(1,100000);
+  TEST_TERM(INA_COUNT==count, "INA devices found");
 
   INA.setBusConversion(INA_CONVTIME);     // see config.h for value
   INA.setShuntConversion(INA_CONVTIME);   // see config.h for value
   INA.setAveraging(INA_SAMPLES);          // see config.h for value
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);  // bus&shunt
 
+  TERM(F("INA offset"));
   for (uint8_t i=0; i<INA_COUNT; i++) {
-    TEST_ASSERT_EQUAL_MESSAGE(0, INA.getBusMilliVolts(i), "INA.getBusMilliVolts !=0");
-    TEST_ASSERT_EQUAL_MESSAGE(0, INA.getBusMicroAmps(i),  "INA.getBusMicroAmps !=0");
+    uint32_t mv = INA.getBusMilliVolts(i);
+    uint32_t ua = INA.getBusMicroAmps(i);
+    TEST_TERM(mv==0, "INA.getBusMilliVolts !=0");
+    TEST_TERM(ua==0, "INA.getBusMicroAmps !=0");
   }
 }
 
 void test_SD(void) {
-  TEST_ASSERT_MESSAGE(SD.begin(SD_CS, SPI_SPEED), "SD.begin");
+  TERM(F("SD begin"));
+  bool ok = SD.begin(SD_CS, SPI_SPEED);
+  TEST_TERM(ok, "SD.begin");
 
+  TERM(F("SD open"));
   TEST = SD.open(FILENAME, FILE_WRITE);
-  TEST_ASSERT_MESSAGE(TEST, "SD.open");
+  TEST_TERM(TEST, "SD.open");
 
   TEST.println(F("Testing 1,2,3"));
   TEST.close();
-  TEST_ASSERT_MESSAGE(SD.exists(FILENAME), "SD.exists");
-  TEST_ASSERT_MESSAGE(SD.remove(FILENAME), "SD.remove");
+  TERM(F("SD exists"));
+  ok = SD.exists(FILENAME);
+  TEST_TERM(ok, "SD.exists");
+  ok = SD.remove(FILENAME);
+  TEST_TERM(ok, "SD.remove");
 }
 
 void test_RTC(void) {
 #ifndef HAST_RTC
   TEST_IGNORE_MESSAGE("No RTC, skip test")
-#elif   HAST_RTC == 32768  || HAST_RTC == 62500
-  if(rtc_now()<BUILD_TIME){ rtc_now(BUILD_TIME); } // update RTC if needed
-  TEST_ASSERT_LESS_OR_EQUAL_MESSAGE(BUILD_TIME, rtc_now(), "Stale RTC");
 #else
-  Wire.begin();
+#if HAST_RTC != 32768 && HAST_RTC != 62500
+  TERM(F("RTC exists"));
   Wire.beginTransmission(0x68);
   uint8_t error = Wire.endTransmission();
-  TEST_ASSERT_MESSAGE(error==0, "RTC not found");
+  TEST_TERM(error==0, "RTC not found");
+#endif
+  TERM(F("RTC running"));
+  uint32_t now = rtc_now();
+  if (now<BUILD_TIME) { // update RTC if needed
+    rtc_now(BUILD_TIME);
+    now=rtc_now();
+  }
+  TEST_TERM(now>=BUILD_TIME, "Stale RTC");
 #endif
 }
 
@@ -75,34 +101,31 @@ void test_UI(void) {
 #ifndef HAST_U8X8
   TEST_IGNORE_MESSAGE("No display, skip test")
 #else
-  TERMINAL_begin();                         // start TERMINAL
   button.setClickTicks(SHORTPRESS);         // single press duration [ms]
   button.setPressTicks(LONGPRESS);          // long press duration [ms]
   button.attachClick(setSinglePress);       // single press
   button.attachDoubleClick(setDoublePress); // double press
   button.attachPress(setLongPress);         // long press
 
-  TERMINAL.println(F("SinglePress"));
+  TERMINAL.println(F("UI SinglePress"));
   button_wait();
-  TERMINAL.println((press==SinglePress)?F("PASS"):F("FAIL!"));
-  TEST_ASSERT_MESSAGE(press==SinglePress, "No SinglePress detected");
+  TEST_TERM(press==SinglePress, "No SinglePress detected");
 
-  TERMINAL.println(F("DoublePress"));
+  TERMINAL.println(F("UI DoublePress"));
   button_wait();
-  TERMINAL.println((press==DoublePress)?F("PASS"):F("FAIL!"));
-  TEST_ASSERT_MESSAGE(press==DoublePress, "No DoublePress detected");
+  TEST_TERM(press==DoublePress, "No DoublePress detected");
 
-  TERMINAL.println(F("LongPress"));
+  TERMINAL.println(F("UI LongPress"));
   button_wait();
-  TERMINAL.println((press==LongPress)?F("PASS"):F("FAIL!"));
-  TEST_ASSERT_MESSAGE(press==LongPress, "No LongPress detected");
-
-  TERMINAL_clean();
+  TEST_TERM(press==LongPress, "No LongPress detected");
 #endif
 }
 
 
 void setup() {
+#ifdef HAST_U8X8
+  TERMINAL_begin();                // start TERMINAL
+#endif
   while (!Serial) { delay(10); }   // wait for USB Serial
   UNITY_BEGIN();
 
