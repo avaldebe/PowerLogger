@@ -37,9 +37,10 @@ OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
   #define TERM(msg)
   #define TEST_TERM(ok, msg) TEST_ASSERT_MESSAGE(ok, msg)
 #else
+  #include <MemoryFree.h>
   #define TERM(msg)          TERMINAL.println(msg)
-  #define TERM_FAIL(fail)    if(fail){ TERM(F("  Fail!")); }
-  #define TEST_TERM(ok, msg) TERM_FAIL(!(ok)); TEST_ASSERT(ok)
+  #define TERM_FMEM(fail)    TERMINAL.print((fail)?F("  Fail!\n  MEM:"):F("  MEM:")); TERMINAL.println(freeMemory(), DEC)
+  #define TEST_TERM(ok, msg) TERM_FMEM(!(ok)); TEST_ASSERT(ok)
 #endif
 
 void test_INA(void) {
