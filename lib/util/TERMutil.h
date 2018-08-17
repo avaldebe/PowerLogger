@@ -13,12 +13,17 @@
   inline void TERMINAL_clean(){ TERMINAL.print("\f"); } // \f = form feed: clear the screen
   void TERMINAL_toggle();
 #else
-  #define TERMINAL Serial
-
-  inline void TERMINAL_begin(uint8_t mode=0){
-    Serial.begin(57600);             // for ATmega328p 3.3V 8Mhz
-    while(!Serial){ delay(10); }     // wait for USB Serial
-  }
+  #ifdef NO_TERMINAL
+    inline void TERMINAL_begin(uint8_t mode=0){}
+  #else
+    #ifndef TERMINAL
+    #define TERMINAL Serial
+    #endif
+    inline void TERMINAL_begin(uint8_t mode=0, uint32_t baudrate=57600){
+        TERMINAL.begin(baudrate);        // 57600 for ATmega328p 3.3V 8Mhz
+        while(!TERMINAL){ delay(10); }   // wait for USB Serial
+    }
+  #endif
   inline void TERMINAL_clean(){}
   inline void TERMINAL_toggle(){}
 #endif

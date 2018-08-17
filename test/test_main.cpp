@@ -4,7 +4,6 @@
 
 #include "../src/config.h"                // project configuration
 #include <RTCutil.h>                      // internal/external RTC
-#include <TERMutil.h>
 
 #include <INA.h>
 INA_Class INA;
@@ -17,13 +16,29 @@ const char *FILENAME = "test.123";
 #include <OneButton.h>
 OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
 
-// PASS/FAIL messages to TERMINAL
+// TERMINAL for additional messages
 #ifdef HAST_U8X8
-#define TERM(msg) TERMINAL.println(msg)
-#define TEST_TERM(ok, msg) TERMINAL.print((ok)?F(""):F("  Fail!\n")); TEST_ASSERT_MESSAGE(ok, msg)
+  // messages to DISPLAY
+#elif defined(HAVE_HWSERIAL1) || defined(__STM32F1__) || defined(ESP32)
+  #define TERMINAL Serial1
+#elif defined(ESP8266)
+  #define TERMINAL MySerial
+  #include <SoftwareSerial.h>
+  SoftwareSerial TERMINAL(5, 4); // RX:D1, TX:D2
 #else
-#define TERM(msg)
-#define TEST_TERM(ok, msg) TEST_ASSERT_MESSAGE(ok, msg)
+  #define NO_TERMINAL
+#endif
+#include <TERMutil.h>
+
+// PASS/FAIL messages to TERMINAL
+#ifdef NO_TERMINAL
+  #warning "No TERMINAL messages"
+  #define TERM(msg)
+  #define TEST_TERM(ok, msg) TEST_ASSERT_MESSAGE(ok, msg)
+#else
+  #define TERM(msg)          TERMINAL.println(msg)
+  #define TERM_FAIL(fail)    if(fail){ TERM(F("  Fail!")); }
+  #define TEST_TERM(ok, msg) TERM_FAIL(!(ok)); TEST_ASSERT_MESSAGE(ok, msg)
 #endif
 
 void test_INA(void) {
@@ -65,7 +80,7 @@ void test_SD(void) {
 
 void test_RTC(void) {
 #ifndef HAST_RTC
-  TEST_IGNORE_MESSAGE("No RTC, skip test")
+  TEST_IGNORE_MESSAGE("No RTC, skip test");
 #else
 #if HAST_RTC != 32768 && HAST_RTC != 62500
   TERM(F("RTC exists"));
@@ -99,7 +114,7 @@ void button_wait(uint16_t wait_ms=1000) { // 1 sec max, by default
 
 void test_UI(void) {
 #ifndef HAST_U8X8
-  TEST_IGNORE_MESSAGE("No display, skip test")
+  TEST_IGNORE_MESSAGE("No display, skip test");
 #else
   button.setClickTicks(SHORTPRESS);         // single press duration [ms]
   button.setPressTicks(LONGPRESS);          // long press duration [ms]
@@ -107,15 +122,15 @@ void test_UI(void) {
   button.attachDoubleClick(setDoublePress); // double press
   button.attachPress(setLongPress);         // long press
 
-  TERMINAL.println(F("UI SinglePress"));
+  TERM(F("UI SinglePress"));
   button_wait();
   TEST_TERM(press==SinglePress, "No SinglePress detected");
 
-  TERMINAL.println(F("UI DoublePress"));
+  TERM(F("UI DoublePress"));
   button_wait();
   TEST_TERM(press==DoublePress, "No DoublePress detected");
 
-  TERMINAL.println(F("UI LongPress"));
+  TERM(F("UI LongPress"));
   button_wait();
   TEST_TERM(press==LongPress, "No LongPress detected");
 #endif
@@ -123,9 +138,7 @@ void test_UI(void) {
 
 
 void setup() {
-#ifdef HAST_U8X8
   TERMINAL_begin();                // start TERMINAL
-#endif
   while (!Serial) { delay(10); }   // wait for USB Serial
   UNITY_BEGIN();
 
