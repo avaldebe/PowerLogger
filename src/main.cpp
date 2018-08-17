@@ -74,13 +74,14 @@ void loop() {
 
   // measurements from all INA devices
   Record* record = new Record(last);
+  TERMINAL_clean();
   record->splash(&TERMINAL);
 
   if (recording) {
     buffer.unshift(record);               // buffer new record
     if (buffer.isFull()) { sd_dump(); }   // dump buffer to CSV file
   } else {
-    TERMINAL.println(F("Short press to resume SD recording"));
+    TERMINAL.println(F("SD paused"));
   }
 }
 
@@ -103,8 +104,8 @@ void sd_dump(){
 void recording_toggle(){
   if (recording) { sd_dump(); }           // dump buffer to SD card
   recording = not recording;              // pause/resume buffering
-  TERMINAL.print(F("SD recording "));
-  TERMINAL.println((recording)?F("resumed"):F("paused"));
+  TERMINAL_clean();
+  TERMINAL.println((recording)?F("SD resumed"):F("SD paused"));
 }
 
 void safe_shutdown(){

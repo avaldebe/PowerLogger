@@ -24,6 +24,7 @@
         while(!TERMINAL){ delay(10); }   // wait for USB Serial
     }
   #endif
+  inline void TERMINAL_top(){}
   inline void TERMINAL_clean(){}
   inline void TERMINAL_toggle(){}
 #endif
