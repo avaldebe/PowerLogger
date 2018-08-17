@@ -17,7 +17,9 @@ const char *FILENAME = "test.123";
 OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
 
 // TERMINAL for additional messages
-#ifdef HAST_U8X8
+#ifdef NO_TERMINAL
+  // messages via TEST_ASSERT_MESSAGE
+#elif defined(HAST_U8X8)
   // messages to DISPLAY
 #elif defined(HAVE_HWSERIAL1) || defined(__STM32F1__) || defined(ESP32)
   #define TERMINAL Serial1
@@ -32,13 +34,12 @@ OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
 
 // PASS/FAIL messages to TERMINAL
 #ifdef NO_TERMINAL
-  #warning "No TERMINAL messages"
   #define TERM(msg)
   #define TEST_TERM(ok, msg) TEST_ASSERT_MESSAGE(ok, msg)
 #else
   #define TERM(msg)          TERMINAL.println(msg)
   #define TERM_FAIL(fail)    if(fail){ TERM(F("  Fail!")); }
-  #define TEST_TERM(ok, msg) TERM_FAIL(!(ok)); TEST_ASSERT_MESSAGE(ok, msg)
+  #define TEST_TERM(ok, msg) TERM_FAIL(!(ok)); TEST_ASSERT(ok)
 #endif
 
 void test_INA(void) {
