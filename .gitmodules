@@ -2,3 +2,6 @@
 	path = lib/INA
 	url = git@github.com:avaldebe/INA.git
 	branch = stm32f1
+[submodule "MemoryFree"]
+	path = lib/MemoryFree/
+	url = git@github.com:mpflaga/Arduino-MemoryFree.git
