@@ -165,13 +165,13 @@ void setup() {
   RUN_TEST(test_INA);
   RUN_TEST(test_MEM);
 
-  RUN_TEST(test_SD);
-  RUN_TEST(test_MEM);
-
   RUN_TEST(test_RTC);
   RUN_TEST(test_MEM);
-
+  
   RUN_TEST(test_UI);
+  RUN_TEST(test_MEM);
+
+  RUN_TEST(test_SD);
   RUN_TEST(test_MEM);
 
   UNITY_END();
