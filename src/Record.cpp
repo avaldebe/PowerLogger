@@ -69,9 +69,9 @@ void Record::print(Print* out) {
 void Record::splash(Print* out, uint8_t width, bool header, bool footer) {
   switch (width) {
     case 16 ... 255:  // wide screen. eg 128x64 or 128x32
-      //                          0123456789ABCDEF
-      //                         "1: 23.000  1.000"
-      if (header) { out->println(F("#   V [V] I [A]")); }
+      //                            0123456789ABCDEF
+      //                           "1: 23.000  1.000"
+      if (header) { out->println(F("#   V [V]  I [A]")); }
       for (uint8_t i=0; i<INA_COUNT; i++) {
         out->print(i);out->print(F(":"));
         out->print  (dtostrf(getVolts(i),7,3,linebuffer));
