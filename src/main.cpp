@@ -42,7 +42,7 @@ void sd_dump();
 #endif
 OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
 
-bool recording = false;                   // off when starting
+bool recording = false;                   // write to SD (or not)
 void recording_toggle();
 void safe_shutdown();
 
@@ -51,28 +51,28 @@ void setup() {
   TERMINAL.print(F("RTC @"));
   TERMINAL.println(rtc_init());           // update RTC if needed
 
+  Record::init(&TERMINAL);                // init/config INA devices
+
   if (!SD.begin(SD_CS, SPI_SPEED)) {
     SD.initErrorHalt(&TERMINAL);          // errorcode/message to TERMINAL
   }
   TERMINAL.print(F("SD: "));
   TERMINAL.println(FILENAME);
-
-  Record::init(&TERMINAL);                  // init/config INA devices
+  if (!recording) {                       // wait until SD is resumed
+    TERMINAL.println(F("SD: paused"));
+  }
 
 #ifdef SHORTPRESS
-  button.setClickTicks(SHORTPRESS);         // single press duration [ms]
+  button.setClickTicks(SHORTPRESS);       // single press duration [ms]
 #endif
 #ifdef LONGPRESS
-  button.setPressTicks(LONGPRESS);          // long press duration [ms]
+  button.setPressTicks(LONGPRESS);        // long press duration [ms]
 #endif
   button.attachClick(recording_toggle);   // pause/resume buffering
   button.attachPress(safe_shutdown);      // dump buffen and power down
   button.attachDoubleClick(TERMINAL_toggle);  // switch backlight/display on/off
 
-  if (!recording) {                       // wait until SD is resumed
-    TERMINAL.println(F("SD paused"));
-    while (!recording) { delay(10); }
-   }
+  delay(2000);
 }
 
 void loop() {
