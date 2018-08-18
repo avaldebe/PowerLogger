@@ -35,13 +35,23 @@ OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
 // PASS/FAIL messages to TERMINAL
 #ifdef NO_TERMINAL
   #define TERM(msg)
+  #define TERM_FMEM(mem)
+  #define TERM_FAIL(fail)
   #define TEST_TERM(ok, msg) TEST_ASSERT_MESSAGE(ok, msg)
 #else
-  #include <MemoryFree.h>
   #define TERM(msg)          TERMINAL.println(msg)
-  #define TERM_FMEM(fail)    TERMINAL.print((fail)?F("  Fail!\n  MEM:"):F("  MEM:")); TERMINAL.println(freeMemory(), DEC)
-  #define TEST_TERM(ok, msg) TERM_FMEM(!(ok)); TEST_ASSERT(ok)
+  #define TERM_FMEM(mem)     TERMINAL.print(F("MEM "));TERMINAL.println(mem, DEC)
+  #define TERM_FAIL(fail)    TERMINAL.print((fail)?F("  Fail!\n"):F(""))
+  #define TEST_TERM(ok, msg) TERM_FAIL(!(ok)); TEST_ASSERT(ok)
 #endif
+
+
+#include <MemoryFree.h>
+void test_MEM(void) {
+  int mem = freeMemory();
+  TERM_FMEM(mem/8);
+  TEST_TERM(mem>0, "Not enough memory");
+}
 
 void test_INA(void) {
   TERM(F("INA count"));
@@ -63,19 +73,22 @@ void test_INA(void) {
 }
 
 void test_SD(void) {
-  TERM(F("SD begin"));
+  TERM(F("SD  begin"));
   bool ok = SD.begin(SD_CS, SPI_SPEED);
   TEST_TERM(ok, "SD.begin");
 
-  TERM(F("SD open"));
+  TERM(F("SD  open"));
   TEST = SD.open(FILENAME, FILE_WRITE);
   TEST_TERM(TEST, "SD.open");
 
   TEST.println(F("Testing 1,2,3"));
   TEST.close();
-  TERM(F("SD exists"));
+
+  TERM(F("SD  exists"));
   ok = SD.exists(FILENAME);
   TEST_TERM(ok, "SD.exists");
+
+  TERM(F("SD  remove"));
   ok = SD.remove(FILENAME);
   TEST_TERM(ok, "SD.remove");
 }
@@ -147,11 +160,19 @@ void setup() {
   TERMINAL_begin();                // start TERMINAL
   while (!Serial) { delay(10); }   // wait for USB Serial
   UNITY_BEGIN();
+  RUN_TEST(test_MEM);
 
   RUN_TEST(test_INA);
+  RUN_TEST(test_MEM);
+
   RUN_TEST(test_SD);
+  RUN_TEST(test_MEM);
+
   RUN_TEST(test_RTC);
+  RUN_TEST(test_MEM);
+
   RUN_TEST(test_UI);
+  RUN_TEST(test_MEM);
 
   UNITY_END();
 }
