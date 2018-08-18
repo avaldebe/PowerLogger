@@ -53,8 +53,10 @@ void setup() {
   if (!SD.begin(SD_CS, SPI_SPEED)) {
     SD.initErrorHalt(&TERMINAL);          // errorcode/message to TERMINAL
   }
+  TERMINAL.print(F("SD: "));
+  TERMINAL.println(FILENAME);
 
-  Record::init(&TERMINAL, FILENAME);      // init/config INA devices
+  Record::init(&TERMINAL);                  // init/config INA devices
 
 #ifdef SHORTPRESS
   button.setClickTicks(SHORTPRESS);         // single press duration [ms]
@@ -65,6 +67,11 @@ void setup() {
   button.attachClick(recording_toggle);   // pause/resume buffering
   button.attachPress(safe_shutdown);      // dump buffen and power down
   button.attachDoubleClick(TERMINAL_toggle);  // switch backlight/display on/off
+
+  if (!recording) {                       // wait until SD is resumed
+    TERMINAL.println(F("SD paused"));
+    while (!recording) { delay(10); }
+   }
 }
 
 void loop() {

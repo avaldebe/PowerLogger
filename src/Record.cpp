@@ -20,7 +20,7 @@ char *Record::getRunTime(uint32_t s){
   return linebuffer;
 }
 
-void Record::init(Print* out, const char *filename){
+void Record::init(Print* out){
   uint8_t INAfound = INA.begin(1,100000); // maxBusAmps,microOhmR
   while (INAfound != INA_COUNT) {
     out->print(F("ERROR: INA devices expected "));
@@ -34,20 +34,18 @@ void Record::init(Print* out, const char *filename){
   INA.setAveraging(INA_SAMPLES);          // see config.h for value
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);  // bus&shunt
 
-  out->print(F("INA devices on the I2C bus: "));
-  out->println(INA_COUNT);
   for (uint8_t i=0; i<INA_COUNT; i++) {
-    out->print(F("ch"));
+    out->print(F("INA"));
     out->print(i);
+    out->print(F(": "));
     out->println(INA.getDeviceName(i));
   }
 
-  out->print(F("Buffering "));
-  out->print(BUFFER_SIZE);
-  out->print(F(" records of "));
+  out->print(F("Buffer "));
   out->print(RECORD_SIZE*sizeof(uint32_t));
-  out->print(" bytes before writing to SD:");
-  out->println(filename);
+  out->print(F("Bx"));
+  out->print(BUFFER_SIZE);
+  out->println("rec");
 }
 
 void Record::header(Print* out) {

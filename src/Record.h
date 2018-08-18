@@ -21,7 +21,7 @@ public:
   static char *getRunTime(uint32_t secs);
   inline char *getRunTime(){ return getRunTime(time/1000); }
 
-  static void init(Print* out, const char *filename);
+  static void init(Print* out);
   void header(Print* out);
   void print(Print* out);
   void splash(Print* out, uint8_t width=16, bool header=true, bool footer=true);
