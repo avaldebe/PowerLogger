@@ -19,6 +19,7 @@ Based on
 
 #include <Arduino.h>
 #include "config.h"                       // project configuration
+char linebuffer[16];                      // long enough for 1 line
 #include "Record.h"                       // secret sauce ;-)
 
 #include <SdFat.h>
@@ -27,7 +28,7 @@ File CSV;                                 // File object for filename
 
 #include <RTCutil.h>
 #ifdef HAST_RTC
-  #define FILENAME rtc_fmt('C')           // 'YYMMDD.csv'
+  #define FILENAME rtc_fmt('C', linebuffer)     // 'YYMMDD.csv'
 #else
   #define FILENAME "INA.csv"
 #endif
@@ -47,7 +48,7 @@ void safe_shutdown();
 
 void setup() {
   TERMINAL_begin();                       // start TERMINAL
-  rtc_init(&TERMINAL);                    // update RTC if needed
+  rtc_init(&TERMINAL, linebuffer);        // update RTC if needed
 
   if (!SD.begin(SD_CS, SPI_SPEED)) {
     SD.initErrorHalt(&TERMINAL);          // errorcode/message to TERMINAL

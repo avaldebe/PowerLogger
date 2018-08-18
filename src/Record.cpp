@@ -13,12 +13,11 @@ Record::Record(uint32_t time): time(time) {
 
 char *Record::getRunTime(uint32_t s){
   uint8_t d, h, m;
-  static char str[16];      // just enough for "00:00:00:00"
   d = s/86400; s %= 86400;  // 86400 secs on a day
   h = s/ 3600; s %=  3600;  //  3600 secs on a hour
   m = s/   60; s %=    60;  //    60 secs on a minute
-  sprintf(str, "%02u:%02u:%02u:%02u", d, h, m, (uint8_t)s);
-  return str;
+  sprintf(linebuffer, "%02u:%02u:%02u:%02u", d, h, m, (uint8_t)s);
+  return linebuffer;
 }
 
 void Record::init(Print* out, const char *filename){
@@ -70,7 +69,6 @@ void Record::print(Print* out) {
 }
 
 void Record::splash(Print* out, uint8_t width, bool header, bool footer) {
-  char str[8];
   switch (width) {
     case 16 ... 255:  // wide screen. eg 128x64 or 128x32
       //                          0123456789ABCDEF
@@ -78,8 +76,8 @@ void Record::splash(Print* out, uint8_t width, bool header, bool footer) {
       if (header) { out->println(F("#   V [V] I [A]")); }
       for (uint8_t i=0; i<INA_COUNT; i++) {
         out->print(i);out->print(F(":"));
-        out->print(dtostrf(getVolts(i),7,3,str));
-        out->println(dtostrf(getAmps(i),7,3,str));
+        out->print  (dtostrf(getVolts(i),7,3,linebuffer));
+        out->println(dtostrf(getAmps(i) ,7,3,linebuffer));
       }
     break;
     case 4 ... 15:  // narrow screem, eg 84X48 or 64X48
@@ -89,9 +87,9 @@ void Record::splash(Print* out, uint8_t width, bool header, bool footer) {
       header &= width > 6;
       for (uint8_t i=0; i<INA_COUNT; i++) {
         if (header) { out->print(F("V")); }
-        out->print(i);out->println(dtostrf(getVolts(i),7,3,str));
+        out->print(i);out->println(dtostrf(getVolts(i),7,3,linebuffer));
         if (header) { out->print(F("A")); }
-        out->print(i);out->println(dtostrf(getAmps(i) ,7,3,str));
+        out->print(i);out->println(dtostrf(getAmps(i) ,7,3,linebuffer));
       }
     break;
   }

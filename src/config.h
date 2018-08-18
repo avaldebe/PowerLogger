@@ -40,4 +40,6 @@ Change SPI_SPEED to SD_SCK_MHZ(50) for best performance. */
 #define BUFFER_SIZE    128/sizeof(uint32_t)/RECORD_SIZE // 128 bytes
 #endif
 
+extern char linebuffer[];      // common string buffer
+
 #endif
