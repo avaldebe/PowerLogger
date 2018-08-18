@@ -54,7 +54,9 @@ void test_MEM(void) {
 }
 
 void test_INA(void) {
-  TERM(F("INA count"));
+  TERM(F("INA"));
+
+  TERM(F("  count"));
   uint8_t count = INA.begin(1,100000);
   TEST_TERM(INA_COUNT==count, "INA devices found");
 
@@ -63,7 +65,7 @@ void test_INA(void) {
   INA.setAveraging(INA_SAMPLES);          // see config.h for value
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);  // bus&shunt
 
-  TERM(F("INA offset"));
+  TERM(F("  offset"));
   for (uint8_t i=0; i<INA_COUNT; i++) {
     uint32_t mv = INA.getBusMilliVolts(i);
     uint32_t ua = INA.getBusMicroAmps(i);
@@ -73,37 +75,40 @@ void test_INA(void) {
 }
 
 void test_SD(void) {
-  TERM(F("SD  begin"));
+  TERM(F("SD"));
+
+  TERM(F("  begin"));
   bool ok = SD.begin(SD_CS, SPI_SPEED);
   TEST_TERM(ok, "SD.begin");
 
-  TERM(F("SD  open"));
+  TERM(F("  open"));
   TEST = SD.open(FILENAME, FILE_WRITE);
   TEST_TERM(TEST, "SD.open");
 
   TEST.println(F("Testing 1,2,3"));
   TEST.close();
 
-  TERM(F("SD  exists"));
+  TERM(F("  exists"));
   ok = SD.exists(FILENAME);
   TEST_TERM(ok, "SD.exists");
 
-  TERM(F("SD  remove"));
+  TERM(F("  remove"));
   ok = SD.remove(FILENAME);
   TEST_TERM(ok, "SD.remove");
 }
 
 void test_RTC(void) {
+  TERM(F("RTC"));
 #ifndef HAST_RTC
   TEST_IGNORE_MESSAGE("No RTC, skip test");
 #else
 #if HAST_RTC != 32768 && HAST_RTC != 62500
-  TERM(F("RTC exists"));
+  TERM(F("  exists"));
   Wire.beginTransmission(0x68);
   uint8_t error = Wire.endTransmission();
   TEST_TERM(error==0, "RTC not found");
 #endif
-  TERM(F("RTC running"));
+  TERM(F("  running"));
   uint32_t now = rtc_now();
   if (now<BUILD_TIME) { // update RTC if needed
     rtc_now(BUILD_TIME);
@@ -128,6 +133,7 @@ void button_wait(uint16_t wait_ms=2000) { // 1 sec max, by default
 }
 
 void test_UI(void) {
+  TERM(F("UI"));
 #ifndef HAST_U8X8
   TEST_IGNORE_MESSAGE("No display, skip test");
 #else
@@ -141,15 +147,15 @@ void test_UI(void) {
   button.attachDoubleClick(setDoublePress); // double press
   button.attachPress(setLongPress);         // long press
 
-  TERM(F("UI SinglePress"));
+  TERM(F("  SinglePress"));
   button_wait();
   TEST_TERM(press==SinglePress, "No SinglePress detected");
 
-  TERM(F("UI DoublePress"));
+  TERM(F("  DoublePress"));
   button_wait();
   TEST_TERM(press==DoublePress, "No DoublePress detected");
 
-  TERM(F("UI LongPress"));
+  TERM(F("  LongPress"));
   button_wait();
   TEST_TERM(press==LongPress, "No LongPress detected");
 #endif
@@ -167,7 +173,7 @@ void setup() {
 
   RUN_TEST(test_RTC);
   RUN_TEST(test_MEM);
-  
+
   RUN_TEST(test_UI);
   RUN_TEST(test_MEM);
 
