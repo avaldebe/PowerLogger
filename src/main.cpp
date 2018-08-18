@@ -56,9 +56,13 @@ void setup() {
 
   Record::init(&TERMINAL, FILENAME);      // init/config INA devices
 
-  button.setClickTicks(SHORTPRESS);       // single press duration [ms]
+#ifdef SHORTPRESS
+  button.setClickTicks(SHORTPRESS);         // single press duration [ms]
+#endif
+#ifdef LONGPRESS
+  button.setPressTicks(LONGPRESS);          // long press duration [ms]
+#endif
   button.attachClick(recording_toggle);   // pause/resume buffering
-  button.setPressTicks(LONGPRESS);        // long press duration [ms]
   button.attachPress(safe_shutdown);      // dump buffen and power down
   button.attachDoubleClick(TERMINAL_toggle);  // switch backlight/display on/off
 }

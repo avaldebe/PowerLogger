@@ -104,7 +104,7 @@ enum Press { NoPress, SinglePress, DoublePress, LongPress } press = NoPress;
 void setSinglePress(void) { press = SinglePress; }
 void setDoublePress(void) { press = DoublePress; }
 void setLongPress(void)   { press = LongPress; }
-void button_wait(uint16_t wait_ms=1000) { // 1 sec max, by default
+void button_wait(uint16_t wait_ms=2000) { // 1 sec max, by default
   press = NoPress;
   button.reset();
   uint32_t start = millis();
@@ -118,8 +118,12 @@ void test_UI(void) {
 #ifndef HAST_U8X8
   TEST_IGNORE_MESSAGE("No display, skip test");
 #else
+#ifdef SHORTPRESS
   button.setClickTicks(SHORTPRESS);         // single press duration [ms]
+#endif
+#ifdef LONGPRESS
   button.setPressTicks(LONGPRESS);          // long press duration [ms]
+#endif
   button.attachClick(setSinglePress);       // single press
   button.attachDoubleClick(setDoublePress); // double press
   button.attachPress(setLongPress);         // long press
