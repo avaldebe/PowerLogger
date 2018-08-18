@@ -30,18 +30,11 @@
   #error "Unknown RTC option"
 #endif
 
-void rtc_init(Print* out, char *str){
+uint32_t rtc_init(){
   if(rtc_now()<BUILD_TIME){
-    rtc_now(BUILD_TIME);
-    out->print(F("Set RTC to built time: "));
-    out->println(BUILD_TIME);
+    return rtc_now(BUILD_TIME);
   }
-  out->print(F("PowerLogger start: "));
-  out->print(rtc_fmt('D', str));    // long date
-  out->print(F(" "));
-  out->print(rtc_fmt('T', str));    // long time
-  out->print(F("UTC @"));
-  out->println(rtc_now());
+  return rtc_now();
 }
 
 uint32_t rtc_now(){

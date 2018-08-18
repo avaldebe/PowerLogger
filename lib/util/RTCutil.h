@@ -9,13 +9,13 @@
   #ifndef BUILD_TIME
   #error "Missing BUILD_TIME flag, try again with -DBUILD_TIME=$UNIX_TIME"
   #endif
-  void rtc_init(Print* out, char *str);
+  uint32_t rtc_init();  // update RTC if needed
   uint32_t rtc_now();
   uint32_t rtc_now(uint32_t time);
   char *rtc_fmt(const char fmt, char *str);
 #else
-  void rtc_init(Print* out, char *str){};
-  uint32_t rtc_now(){ return 0; };
+  inline uint32_t rtc_init(){ return 0; };
+  inline uint32_t rtc_now(){ return 0; };
 #endif
 
 #endif

@@ -48,7 +48,8 @@ void safe_shutdown();
 
 void setup() {
   TERMINAL_begin();                       // start TERMINAL
-  rtc_init(&TERMINAL, linebuffer);        // update RTC if needed
+  TERMINAL.print(F("RTC @"));
+  TERMINAL.println(rtc_init());           // update RTC if needed
 
   if (!SD.begin(SD_CS, SPI_SPEED)) {
     SD.initErrorHalt(&TERMINAL);          // errorcode/message to TERMINAL
