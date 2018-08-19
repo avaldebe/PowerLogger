@@ -1,4 +1,8 @@
 /*
+PowerLogger
+DIY multi-channel voltage/current data logger
+https://github.com:avaldebe/PowerLogger/
+
 Based on
 
 - DisplayReadings example fom INA library
@@ -15,6 +19,9 @@ Based on
 
 - BlinkMachine esmaple from the OneButton library
   https://github.com/mathertel/OneButton
+
+- Unit Testing of a “Blink” Project
+  http://docs.platformio.org/en/latest/tutorials/core/unit_testing_blink.html
 */
 
 #include <Arduino.h>

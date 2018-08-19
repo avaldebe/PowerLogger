@@ -1,10 +1,35 @@
+/*
+PowerLogger
+DIY multi-channel voltage/current data logger
+https://github.com:avaldebe/PowerLogger/
+
+Based on
+
+- DisplayReadings example fom INA library
+  https://github.com/SV-Zanshin/INA
+
+- QuickStart example form the SdFat library
+  https://github.com/greiman/SdFat
+
+- Object example on the CircularBuffer library
+  https://github.com/rlogiacco/CircularBuffer
+
+- Terminal example from the U8g2 library
+  https://github.com/olikraus/u8g2/
+
+- BlinkMachine esmaple from the OneButton library
+  https://github.com/mathertel/OneButton
+
+- Unit Testing of a “Blink” Project
+  http://docs.platformio.org/en/latest/tutorials/core/unit_testing_blink.html
+*/
+
 #include <Arduino.h>
 #include <Wire.h>
 #include <unity.h>
 
 #include "../src/config.h"                // project configuration
 #include <RTCutil.h>                      // internal/external RTC
-
 #include <INAbufer.h>                     // secret sauce ;-)
 
 #include <SdFat.h>
@@ -29,7 +54,6 @@ OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
 #else
   #define NO_TERMINAL
 #endif
-#include <TERMutil.h>
 
 // PASS/FAIL messages to TERMINAL
 #ifdef NO_TERMINAL
@@ -45,9 +69,9 @@ OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
   #define TERM_FAIL(fail)     TERMINAL.print((fail)?F("  Fail!\n"):F(""))
   #define TEST_TERM(ok, msg)  TERM_FAIL(!(ok)); TEST_ASSERT(ok)
 #endif
-
-
+#include <TERMutil.h>
 #include <MemoryFree.h>
+
 void test_MEM(void) {
   int mem = freeMemory();
   TERM_FMEM(mem/8);
@@ -75,6 +99,17 @@ void test_INA(void) {
   }
 }
 
+void test_BUF(void) {
+  TERM(F("BUF"));
+  TERM(F("  fill"));
+  Record* record = NULL;
+  while (!buffer.isFull()) {
+    record = new Record(millis());
+    TEST_TERM(record, "Buffer too large");
+    buffer.unshift(record);
+  }
+}
+
 void test_SD(void) {
   TERM(F("SD"));
 
@@ -86,7 +121,14 @@ void test_SD(void) {
   TEST = SD.open(FILENAME, FILE_WRITE);
   TEST_TERM(TEST, "SD.open");
 
-  TEST.println(F("Testing 1,2,3"));
+  TERM(F("  write"));
+  Record* record = NULL;
+  record->header(&TEST);
+  while (!buffer.isEmpty()) {
+    record = buffer.shift();
+    record->print(&TEST);
+    delete record;
+  }
   TEST.close();
 
   TERM(F("  exists"));
@@ -166,23 +208,31 @@ void setup() {
   RUN_TEST(test_MEM);
 
   TERM_CLEAR(1000);
-  RUN_TEST(test_INA);
+  RUN_TEST(test_RTC);
   RUN_TEST(test_MEM);
 
   TERM_CLEAR(1000);
-  RUN_TEST(test_RTC);
+  RUN_TEST(test_INA);
   RUN_TEST(test_MEM);
 
   TERM_CLEAR(1000);
   RUN_TEST(test_UI);
   RUN_TEST(test_MEM);
-
-  TERM_CLEAR(1000);
-  RUN_TEST(test_SD);
-  RUN_TEST(test_MEM);
-
-  UNITY_END();
 }
 
 // do nothing
-void loop() {}
+void loop() {
+  const uint8_t max_count = 3;
+  static uint8_t count = 0;
+  if (count++ < max_count) {
+    TERM_CLEAR(1000);
+    RUN_TEST(test_BUF);
+    RUN_TEST(test_MEM);
+
+    TERM_CLEAR(1000);
+    RUN_TEST(test_SD);
+    RUN_TEST(test_MEM);
+  } else {
+    UNITY_END(); // stop unit testing
+  }
+}
