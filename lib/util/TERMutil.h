@@ -46,7 +46,7 @@
   extern TERMINAL_TYPE TERMINAL;
 
   void TERMINAL_begin();
-  inline void TERMINAL_clean(){ TERMINAL.clear(); }
+  inline void TERMINAL_clear(uint32_t ms=0){ delay(ms);TERMINAL.clear(); }
   inline void TERMINAL_home(){ TERMINAL.home(); }
   void TERMINAL_toggle();
 #else
@@ -61,7 +61,7 @@
         while(!TERMINAL){ delay(10); }   // wait for USB Serial
     }
   #endif
-  inline void TERMINAL_clean(){}
+  inline void TERMINAL_clear(uint32_t ms=0){ delay(ms); }
   inline void TERMINAL_home(){}
   inline void TERMINAL_toggle(){}
 #endif

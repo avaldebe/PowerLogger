@@ -15,7 +15,7 @@ static const uint8_t reset = U8X8_PIN_NONE; // triger the right U8X8 constructor
 void TERMINAL_begin(){
   TERMINAL.begin();
   TERMINAL.setFont(u8x8_font_chroma48medium8_r);
-  TERMINAL_clean();
+  TERMINAL.clear();
 
 #ifdef BACKLIGHT_PIN
   // display backlight attached/controlled by BACKLIGHT_PIN

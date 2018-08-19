@@ -35,14 +35,16 @@ OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
 // PASS/FAIL messages to TERMINAL
 #ifdef NO_TERMINAL
   #define TERM(msg)
+  #define TERM_CLEAN(ms)
   #define TERM_FMEM(mem)
   #define TERM_FAIL(fail)
-  #define TEST_TERM(ok, msg) TEST_ASSERT_MESSAGE(ok, msg)
+  #define TEST_TERM(ok, msg)  TEST_ASSERT_MESSAGE(ok, msg)
 #else
-  #define TERM(msg)          TERMINAL.println(msg)
-  #define TERM_FMEM(mem)     TERMINAL.print(F("MEM "));TERMINAL.println(mem, DEC)
-  #define TERM_FAIL(fail)    TERMINAL.print((fail)?F("  Fail!\n"):F(""))
-  #define TEST_TERM(ok, msg) TERM_FAIL(!(ok)); TEST_ASSERT(ok)
+  #define TERM(msg)           TERMINAL.println(msg)
+  #define TERM_CLEAR(ms)      TERMINAL_clear(ms)
+  #define TERM_FMEM(mem)      TERMINAL.print(F("MEM "));TERMINAL.println(mem, DEC)
+  #define TERM_FAIL(fail)     TERMINAL.print((fail)?F("  Fail!\n"):F(""))
+  #define TEST_TERM(ok, msg)  TERM_FAIL(!(ok)); TEST_ASSERT(ok)
 #endif
 
 
@@ -164,15 +166,19 @@ void setup() {
   UNITY_BEGIN();
   RUN_TEST(test_MEM);
 
+  TERM_CLEAR(1000);
   RUN_TEST(test_INA);
   RUN_TEST(test_MEM);
 
+  TERM_CLEAR(1000);
   RUN_TEST(test_RTC);
   RUN_TEST(test_MEM);
 
+  TERM_CLEAR(1000);
   RUN_TEST(test_UI);
   RUN_TEST(test_MEM);
 
+  TERM_CLEAR(1000);
   RUN_TEST(test_SD);
   RUN_TEST(test_MEM);
 

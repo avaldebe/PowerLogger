@@ -71,8 +71,7 @@ void setup() {
   button.attachPress(safe_shutdown);      // dump buffen and power down
   button.attachDoubleClick(TERMINAL_toggle);  // switch backlight/display on/off
 
-  delay(2000);
-  TERMINAL_clean();
+  TERMINAL_clear(2000);
 }
 
 void loop() {
@@ -126,7 +125,7 @@ void sd_dump(){
 void recording_toggle(){
   if (recording) { sd_dump(); }           // dump buffer to SD card
   recording = not recording;              // pause/resume buffering
-  TERMINAL_clean();
+  TERMINAL_clear();
   TERMINAL.println((recording)?F("SD resumed"):F("SD paused"));
 }
 
