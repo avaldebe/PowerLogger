@@ -130,7 +130,8 @@ void recording_toggle(){
 }
 
 void safe_shutdown(){
-  TERMINAL.println(F("Safe shutdown started"));
+  TERMINAL_clear();
+  TERMINAL.println(F("Safe shutdown"));
   sd_dump();                              // dump buffer to SD card
   recording = false;                      // pause buffering
 #ifdef HAS_SOFTPOWER
@@ -138,6 +139,7 @@ void safe_shutdown(){
   pinMode(BUTTON_PIN, OUTPUT);
   digitalWrite(BUTTON_PIN, LOW);         // trigger shutdown circuitry
 #else
-  TERMINAL.println(F("You can now safely remove power"));
+  TERMINAL.println(F("Remove power"));
 #endif
+  while (true) { delay(100); }
 }
