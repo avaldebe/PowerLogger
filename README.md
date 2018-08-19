@@ -17,7 +17,7 @@ The [CircularBuffer library][Buffer] provides the buffer for the measurements.
 STM32F1 microcontrollers have a builtin RTC.
 The [bluepill][] board has a 32 kHz RTC crystal
 and a dedicated pin (marked `VB` on the board and `Vbat` on the pinout)
-for a RTC battery backup.
+for a RTC backup battery.
 
 ## External RTC (optional)
 The following external RTCs are supported via the [RTClib library][RTClib]:
@@ -25,16 +25,16 @@ DS1307, DS3231, PCF8583, PCF8563.
 
 ## Display (optional)
 Small displays are supported thanks to the [U8x8 constructors][U8x8]
-from the [U8g2 library][U8g2]. At the moment only 128x64 and 128x32 I2C
+from the [U8g2 library][U8g2]. At the moment only some 128x64 and 128x32 I2C
 displays are supported.
 
 When a display is present, the print statements that otherwise would go to
-`Serial` are redirected to the display. The INA measurements are displayed
-such that 6 channels fit on a 128x64 display and 2 channels on a 128x32.
+`Serial` are redirected to the display. The measurements are formatted
+to fit 6 channels on a 128x64 display and 2 channels on a 128x32 display.
 
 ## CSV file
 Voltage and current measurements are not written directly to the SD card.
-They are temporarily sotred on a circular.
+They are temporarily sotred on a circular buffer.
 
 The measurements from all INA devices taken "at the same time"
 are buffered as one `Record`.
@@ -67,11 +67,37 @@ can be be used to connect/disconnect the display backlight power pin (`BACKLIGHT
 If no `BACKLIGHT_PIN` flag is defined, the double press will put the display
 on [power save mode][U8x8].
 
-## Install libraries on PlatformIO
+# Instructions
+
+## Project configuration
+Different hardware combinations are defined on `platformio.ini`.
+Other options, such as sampling frequency, number of channels and buffer size,
+are defined on  `src/config.h`. Change as needed and copile the project with `pio run`.
+
+**Note** a single INA3221 counts as 3 INA channels.
+
+## Libraries on lib path
+The libraries on `lib/util` provide simplified interfaces to the RTC object (`RTCutil`), display/serial `Print` objects (`TERMutil`), and the buffering of INA measurements (`INAbufer`).
+
+The remaining libraries/versions on `lib/` are not (yet) available
+on the PlatformIO Library Manager, so they are provided as git submodules.
 ```bash
 # get INA library to lib/INA/
 git submodule init lib/INA/
 
+# get MemoryFree library to lib/MemoryFree/
+git submodule init lib/MemoryFree/
+```
+
+## Other library depencecies
+Other library depencecies should be automatically installed by the
+the PlatformIO Library Manager the first time the project is compiled.
+They will be installed to `~/.platformio/lib`,
+which is assumend to be the global library path.
+For a local install comment the `libdeps_dir` definition on `platformio.ini`.
+
+The following commands are provided for reference.
+```bash
 # global install, so it can be used on other projects
 pio lib --global install SdFat CircularBuffer OneButton
 
@@ -81,6 +107,12 @@ pio lib --global install RTClib
 # display (optional)
 pio lib --global install U8g2
 ```
+
+# Need for help?
+## Test the project first
+The differnt components of this project are tested on `test/test_main.cpp`.
+The RAM usage is monitored using the [MemoryFree library][MemoryFree].
+Please run `pio test` before opening an issue asking for support.
 
 [GreatScott]: https://www.instructables.com/id/Make-Your-Own-Power-MeterLogger/
 [bluepill]:   https://wiki.stm32duino.com/index.php?title=Blue_Pill
@@ -95,3 +127,4 @@ pio lib --global install U8g2
 [RTClib]:  https://github.com/adafruit/RTClib
 [U8g2]:    https://github.com/olikraus/u8g2
 [U8x8]:    https://github.com/olikraus/u8g2/wiki/u8x8reference
+[MemoryFree]: https://github.com/mpflaga/Arduino-MemoryFree
