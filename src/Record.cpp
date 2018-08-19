@@ -72,11 +72,12 @@ void Record::splash(Print* out, uint8_t width, bool header) {
     case 16 ... 255:  // wide screen. eg 128x64 or 128x32
       //                            0123456789ABCDEF
       //                           "1: 23.000  1.000"
-      if (header) { out->println(F("#   V [V]  I [A]")); }
+      if (header) { out->print(F("#   V [V]  I [A]\n")); }
       for (uint8_t i=0; i<INA_COUNT; i++) {
         out->print(i);out->print(F(":"));
-        out->print  (dtostrf(getVolts(i),7,3,linebuffer));
-        out->println(dtostrf(getAmps(i) ,7,3,linebuffer));
+        out->print(dtostrf(getVolts(i),7,3,linebuffer));
+        out->print(dtostrf(getAmps(i) ,7,3,linebuffer));
+        out->print(F("\n"));
       }
     break;
     case 4 ... 15:  // narrow screem, eg 84X48 or 64X48
@@ -86,9 +87,13 @@ void Record::splash(Print* out, uint8_t width, bool header) {
       header &= width > 6;
       for (uint8_t i=0; i<INA_COUNT; i++) {
         if (header) { out->print(F("V")); }
-        out->print(i);out->println(dtostrf(getVolts(i),7,3,linebuffer));
+        out->print(i);
+        out->print(dtostrf(getVolts(i),7,3,linebuffer));
+        out->print(F("\n"));
         if (header) { out->print(F("A")); }
-        out->print(i);out->println(dtostrf(getAmps(i) ,7,3,linebuffer));
+        out->print(i);
+        out->print(dtostrf(getAmps(i) ,7,3,linebuffer));
+        out->print(F("\n"));
       }
     break;
   }

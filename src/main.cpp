@@ -95,7 +95,8 @@ void loop() {
   record->splash(&TERMINAL);
   TERMINAL.print(record->getRunTime());
   TERMINAL.print(F(" REC"));
-  TERMINAL.println(buffer.size());
+  TERMINAL.print(buffer.size());
+  TERMINAL.print(F("\n"));
 
   if (recording) {
     buffer.unshift(record);               // buffer new record
