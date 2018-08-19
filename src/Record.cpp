@@ -66,7 +66,7 @@ void Record::print(Print* out) {
   out->println();
 }
 
-void Record::splash(Print* out, uint8_t width, bool header, bool footer) {
+void Record::splash(Print* out, uint8_t width, bool header) {
   switch (width) {
     case 16 ... 255:  // wide screen. eg 128x64 or 128x32
       //                            0123456789ABCDEF
@@ -91,5 +91,4 @@ void Record::splash(Print* out, uint8_t width, bool header, bool footer) {
       }
     break;
   }
-  if (footer) { out->println(getRunTime()); }
 }

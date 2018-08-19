@@ -86,21 +86,22 @@ void loop() {
   last = millis();
 
   // measurements from all INA devices
-  TERMINAL_clean();
-  buffer.unshift(new Record(last));       // buffer new record
-  if (!buffer.first()){
+  Record* record = new Record(last);
+  if (!record) {
     TERMINAL.println(F("Out of memeory"));
     return;
   }
-  buffer.first()->splash(&TERMINAL);
+  TERMINAL_clean();
+  record->splash(&TERMINAL);
+  TERMINAL.print(record->getRunTime());
+  TERMINAL.print(F(" REC"));
+  TERMINAL.println(buffer.size());
 
   if (recording) {
-    TERMINAL.print(F("REC "));
-    TERMINAL.println(buffer.size());
+    buffer.unshift(record);               // buffer new record
     if (buffer.isFull()) { sd_dump(); }   // dump buffer to CSV file
   } else {
-    TERMINAL.println(F("SD paused"));
-    delete buffer.shift();                // drop record from buffer
+    delete record;                        // record from buffer
   }
 }
 

@@ -24,7 +24,7 @@ public:
   static void init(Print* out);
   void header(Print* out);
   void print(Print* out);
-  void splash(Print* out, uint8_t width=16, bool header=true, bool footer=true);
+  void splash(Print* out, uint8_t width=16, bool header=true);
 
 protected:
   uint32_t time;
