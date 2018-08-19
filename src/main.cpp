@@ -72,6 +72,7 @@ void setup() {
   button.attachDoubleClick(TERMINAL_toggle);  // switch backlight/display on/off
 
   delay(2000);
+  TERMINAL_clean();
 }
 
 void loop() {
@@ -90,7 +91,7 @@ void loop() {
     TERMINAL.println(F("Out of memeory"));
     return;
   }
-  TERMINAL_clean();
+  TERMINAL_home();
   record->splash(&TERMINAL);
   TERMINAL.print(record->getRunTime());
   TERMINAL.print(F(" REC"));
