@@ -3,6 +3,7 @@ CircularBuffer<Record*, BUFFER_SIZE> buffer;
 
 #include <INA.h>
 static INA_Class INA;
+static char linebuffer[16];               // long enough for 1 line
 
 Record::Record(uint32_t time): time(time) {
   for (uint8_t i=0; i<INA_COUNT; i++) {

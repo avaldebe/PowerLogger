@@ -19,7 +19,6 @@ Based on
 
 #include <Arduino.h>
 #include "config.h"                       // project configuration
-char linebuffer[16];                      // long enough for 1 line
 #include "Record.h"                       // secret sauce ;-)
 
 #include <SdFat.h>
@@ -28,7 +27,7 @@ File CSV;                                 // File object for filename
 
 #include <RTCutil.h>
 #ifdef HAST_RTC
-  #define FILENAME rtc_fmt('C', linebuffer)     // 'YYMMDD.csv'
+  #define FILENAME rtc_fmt('C')           // 'YYMMDD.csv'
 #else
   #define FILENAME "INA.csv"
 #endif

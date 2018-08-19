@@ -57,8 +57,8 @@ uint32_t rtc_now(uint32_t time){
   return rtc_now(); // update now/unixtime
 }
 
-//static char str[16];
-char *rtc_fmt(const char fmt, char *str){
+char *rtc_fmt(const char fmt){
+  static char str[16];               // long enough for 1 line
   switch (fmt) {
 #if   HAST_RTC == 32768  || HAST_RTC == 62500
   case 'D': // long date

@@ -12,7 +12,7 @@
   uint32_t rtc_init();  // update RTC if needed
   uint32_t rtc_now();
   uint32_t rtc_now(uint32_t time);
-  char *rtc_fmt(const char fmt, char *str);
+  char *rtc_fmt(const char fmt);  // returns internal buffer
 #else
   inline uint32_t rtc_init(){ return 0; };
   inline uint32_t rtc_now(){ return 0; };
