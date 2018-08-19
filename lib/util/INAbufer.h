@@ -32,6 +32,9 @@ protected:
   uint32_t microAmps[INA_COUNT];
 };
 
+#include <INA.h>
+extern INA_Class INA;
+
 #include <CircularBuffer.h>
 extern CircularBuffer<Record*, BUFFER_SIZE> buffer;
 

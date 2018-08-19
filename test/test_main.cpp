@@ -5,8 +5,7 @@
 #include "../src/config.h"                // project configuration
 #include <RTCutil.h>                      // internal/external RTC
 
-#include <INA.h>
-INA_Class INA;
+#include <INAbufer.h>                     // secret sauce ;-)
 
 #include <SdFat.h>
 SdFat SD;                                 // File system object.
