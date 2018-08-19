@@ -1,5 +1,5 @@
-#ifndef Record_h
-#define Record_h
+#ifndef INAbufer_h
+#define INAbufer_h
 
 #include <stdint.h>
 #include <stdio.h>

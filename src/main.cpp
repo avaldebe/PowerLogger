@@ -19,7 +19,7 @@ Based on
 
 #include <Arduino.h>
 #include "config.h"                       // project configuration
-#include "Record.h"                       // secret sauce ;-)
+#include <INAbufer.h>                     // secret sauce ;-)
 
 #include <SdFat.h>
 SdFat SD;                                 // File system object.

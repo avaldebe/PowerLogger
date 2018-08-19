@@ -1,4 +1,4 @@
-#include "Record.h"                       // secret sauce ;-)
+#include "INAbufer.h"                     // secret sauce ;-)
 CircularBuffer<Record*, BUFFER_SIZE> buffer;
 
 #include <INA.h>
