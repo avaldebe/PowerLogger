@@ -83,10 +83,10 @@ The remaining libraries/versions on `lib/` are not (yet) available
 on the PlatformIO Library Manager, so they are provided as git submodules.
 ```bash
 # get INA library to lib/INA/
-git submodule init lib/INA/
+git submodule update --init lib/INA/
 
 # get MemoryFree library to lib/MemoryFree/
-git submodule init lib/MemoryFree/
+git submodule update --init lib/MemoryFree/
 ```
 
 ## Other library depencecies

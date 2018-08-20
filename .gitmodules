@@ -1,6 +1,6 @@
 [submodule "lib/INA"]
 	path = lib/INA
 	url = git@github.com:SV-Zanshin/INA.git
-[submodule "MemoryFree"]
-	path = lib/MemoryFree/
+[submodule "lib/MemoryFree"]
+	path = lib/MemoryFree
 	url = git@github.com:mpflaga/Arduino-MemoryFree.git
