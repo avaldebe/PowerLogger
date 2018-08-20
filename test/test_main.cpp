@@ -28,7 +28,6 @@ Based on
 #include <Wire.h>
 #include <unity.h>
 
-#include "../src/config.h"                // project configuration
 #include <RTCutil.h>                      // internal/external RTC
 #include <INAbufer.h>                     // secret sauce ;-)
 

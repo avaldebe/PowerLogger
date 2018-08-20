@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <Print.h>
-#include "../../src/config.h"             // project configuration
+#include "config.h" // project configuration
 
 class Record {
 public:

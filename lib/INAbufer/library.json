@@ -1,0 +1,22 @@
+{
+    "name": "PowerLogger/INAbufer",
+    "version": "0.0.0",
+    "build": {
+      "flags": "-I ../../src/"
+    },
+    "dependencies": [ 
+      { 
+        "name": "INA",
+        "version": "git@github.com:SV-Zanshin/INA.git#v1.0.3", 
+        "author":"Arnd"
+      },
+      {
+        "name": "CircularBuffer", 
+        "version": ">=1.2.0", 
+        "authors":[
+          { "name": "AgileWare" }, 
+          { "name": "Roberto Lo Giacco", "maintainer": true } 
+        ]
+      }
+    ]
+}
