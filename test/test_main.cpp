@@ -152,8 +152,9 @@ void test_RTC(void) {
   TEST_TERM(error==0, "RTC not found");
 #endif
   TERM(F("  running"));
-  uint32_t now = rtc_init();  // update RTC if needed
-  TEST_TERM(now>=BUILD_TIME, "Stale RTC");
+  rtc_init();  // update RTC if needed
+  bool ok = !rtc_stale();
+  TEST_TERM(ok, "Stale RTC");
 #endif
 }
 

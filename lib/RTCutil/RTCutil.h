@@ -6,10 +6,8 @@
 #include <Print.h>
 
 #ifdef HAST_RTC
-  #ifndef BUILD_TIME
-  #error "Missing BUILD_TIME flag, try again with -DBUILD_TIME=$UNIX_TIME"
-  #endif
-  uint32_t rtc_init();  // update RTC if needed
+  bool rtc_stale();
+  uint32_t rtc_init();
   uint32_t rtc_now();
   uint32_t rtc_now(uint32_t time);
   char *rtc_fmt(const char fmt);  // returns internal buffer

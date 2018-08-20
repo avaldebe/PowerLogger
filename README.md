@@ -77,7 +77,9 @@ are defined on  `src/config.h`. Change as needed and copile the project with `pi
 **Note** a single INA3221 counts as 3 INA channels.
 
 ## Local libraries on lib path
-The libraries on `lib/util` provide simplified interfaces to the RTC object (`RTCutil`), display/serial `Print` objects (`TERMutil`), and the buffering of INA measurements (`INAbufer`).
+The libraries on `lib/` provide simplified interfaces to the RTC object (`lib/RTCutil`),
+display/serial `Print` objects (`lib/util/TERMutil`),
+and the buffering of INA measurements (`lib/util/INAbufer`).
 
 ## External library dependencies
 The first time the project is compiled, the [PlatformIO Library Manager][piolib]

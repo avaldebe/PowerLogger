@@ -30,12 +30,11 @@
   #error "Unknown RTC option"
 #endif
 
-uint32_t rtc_init(){
-  if(rtc_now()<BUILD_TIME){
-    return rtc_now(BUILD_TIME);
-  }
-  return rtc_now();
-}
+#ifndef BUILD_TIME
+  #error "Missing BUILD_TIME flag, try again with -DBUILD_TIME=$UNIX_TIME"
+#endif
+bool rtc_stale(){ return rtc_now()<BUILD_TIME; }
+uint32_t rtc_init(){ return rtc_stale()?rtc_now(BUILD_TIME):rtc_now(); }
 
 uint32_t rtc_now(){
 #if   HAST_RTC == 32768  || HAST_RTC == 62500
