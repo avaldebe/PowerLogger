@@ -7,7 +7,7 @@
 
 #ifdef HAST_RTC
   bool rtc_stale();
-  uint32_t rtc_init();
+  void rtc_init();
   uint32_t rtc_now();
   uint32_t rtc_now(uint32_t time);
   char *rtc_fmt(const char fmt);  // returns internal buffer

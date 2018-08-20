@@ -53,21 +53,7 @@ void recording_toggle();
 void safe_shutdown();
 
 void setup() {
-  TERMINAL_begin();                       // start TERMINAL
-  TERMINAL.print(F("RTC @"));
-  TERMINAL.println(rtc_init());           // update RTC if needed
-
-  Record::init(&TERMINAL);                // init/config INA devices
-
-  if (!SD.begin(SD_CS, SPI_SPEED)) {
-    SD.initErrorHalt(&TERMINAL);          // errorcode/message to TERMINAL
-  }
-  TERMINAL.print(F("SD: "));
-  TERMINAL.println(FILENAME);
-  if (!recording) {                       // wait until SD is resumed
-    TERMINAL.println(F("SD: paused"));
-  }
-
+  rtc_init();                             // set RTC if needed
 #ifdef SHORTPRESS
   button.setClickTicks(SHORTPRESS);       // single press duration [ms]
 #endif
@@ -78,7 +64,33 @@ void setup() {
   button.attachPress(safe_shutdown);      // dump buffen and power down
   button.attachDoubleClick(TERMINAL_toggle);  // switch backlight/display on/off
 
-  TERMINAL_clear(2000);
+  TERMINAL_begin();                       // start TERMINAL
+
+  // 1st splash page
+  TERMINAL.println(F("PowerLogger"));
+#ifdef GIT_REV
+  TERMINAL.println(F("\nRev:"));
+  TERMINAL.println(F(GIT_REV));
+#endif
+  TERMINAL.println(F("\nBuild:"));
+  TERMINAL.println(F(__DATE__));
+  TERMINAL.println(F(__TIME__));
+  TERMINAL_clear(2000);                   // wait 2 sec before continuing
+
+  // 2nd splash page
+  TERMINAL.print(F("RTC @"));
+  TERMINAL.println(rtc_now());
+
+  Record::init(&TERMINAL);                // init/config INA devices
+  if (!SD.begin(SD_CS, SPI_SPEED)) {
+    SD.initErrorHalt(&TERMINAL);          // errorcode/message to TERMINAL
+  }
+  TERMINAL.print(F("SD: "));
+  TERMINAL.println(FILENAME);
+  if (!recording) {                       // wait until SD is resumed
+    TERMINAL.println(F("SD: paused"));
+  }
+  TERMINAL_clear(2000);                   // wait 2 sec before continuing
 }
 
 void loop() {
