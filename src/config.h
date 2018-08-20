@@ -2,15 +2,16 @@
 #define config_h
 #include <stdint.h>
 
-/* SD CARD:
-Reduced SPI speed for breadboards:
-SD_SCK_MHZ(4) will select the highest speed supported by the board under 4 MHz.
-Change SPI_SPEED to SD_SCK_MHZ(50) for best performance. */
-#define SPI_SPEED SD_SCK_MHZ(4)
+/* SD CARD: Reduced SPI speed for breadboards */
+#ifdef BREADBOARD
+#define SPI_SPEED SD_SCK_MHZ(4)   // highest speed supported by the board under 4 MHz.
+#else
+#define SPI_SPEED SD_SCK_MHZ(50)  // best performance
+#endif
 #ifndef SD_CS
 #define SD_CS SS
 #endif
-// check fior pin polission with TFT chip select pin
+// check fior pin collision with TFT chip select pin
 #if defined DISPLAY_CS && DISPLAY_CS == SD_CS
   #error "DISPLAY_CS and SD_CS need different SS pins"
 #endif
