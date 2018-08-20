@@ -76,14 +76,18 @@ are defined on  `src/config.h`. Change as needed and copile the project with `pi
 
 **Note** a single INA3221 counts as 3 INA channels.
 
-## Local libraries on lib path
+## Project libraries on lib/
 The libraries on `lib/` provide simplified interfaces to the RTC object (`lib/RTCutil`),
 display/serial `Print` objects (`lib/TERMutil`),
 and the buffering of INA measurements (`lib/INAbufer`).
+Each local library contains a `library.json` file describing the
+library dependencies and build flags.
 
 ## External library dependencies
-The first time the project is compiled, the [PlatformIO Library Manager][piolib]
-will install all libraries defined by `lib_deps` on  `platformio.ini`.
+This project external library dependencies are described
+by `lib_deps` on `platformio.ini`, and `dependencies` in `lib/*/library.json`.
+The first time the project is compiled,
+the [PlatformIO Library Manager][piolib] will download and install all the dependencies.
 They will be installed to `~/.platformio/lib`, which is assumed to be the global library path.
 For a local install comment the `libdeps_dir` definition on `platformio.ini`.
 
@@ -94,22 +98,16 @@ They will be installed retrieved directly from the project repositories.
 The following commands are provided for reference.
 ```bash
 # global install, so it can be used on other projects
-pio lib --global install SdFat CircularBuffer OneButton
+pio lib --global install SdFat CircularBuffer OneButton RTClib U8g2
 
 # global install from project repository
 pio lib --global install git@github.com:SV-Zanshin/INA.git#v1.0.3
 pio lib --global install git@github.com:mpflaga/Arduino-MemoryFree.git
-
-# external RTC (optional)
-pio lib --global install RTClib
-
-# display (optional)
-pio lib --global install U8g2
 ```
 
 # Need for help?
 ## Test the project first
-The differnt components of this project are tested on `test/test_main.cpp`.
+The different components of this project are tested on `test/test_main.cpp`.
 The RAM usage is monitored using the [MemoryFree library][MemoryFree].
 Please run `pio test` before opening an issue asking for support.
 
