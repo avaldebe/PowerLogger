@@ -76,30 +76,27 @@ are defined on  `src/config.h`. Change as needed and copile the project with `pi
 
 **Note** a single INA3221 counts as 3 INA channels.
 
-## Libraries on lib path
+## Local libraries on lib path
 The libraries on `lib/util` provide simplified interfaces to the RTC object (`RTCutil`), display/serial `Print` objects (`TERMutil`), and the buffering of INA measurements (`INAbufer`).
 
-The remaining libraries/versions on `lib/` are not (yet) available
-on the PlatformIO Library Manager, so they are provided as git submodules.
-```bash
-# get INA library to lib/INA/
-git submodule update --init lib/INA/
-
-# get MemoryFree library to lib/MemoryFree/
-git submodule update --init lib/MemoryFree/
-```
-
-## Other library depencecies
-Other library depencecies should be automatically installed by the
-the PlatformIO Library Manager the first time the project is compiled.
-They will be installed to `~/.platformio/lib`,
-which is assumend to be the global library path.
+## External library dependencies
+The first time the project is compiled, the [PlatformIO Library Manager][piolib]
+will install all libraries defined by `lib_deps` on  `platformio.ini`.
+They will be installed to `~/.platformio/lib`, which is assumed to be the global library path.
 For a local install comment the `libdeps_dir` definition on `platformio.ini`.
+
+The [MemoryFree library][MemoryFree] is not available on the [Library Manager][piolib],
+nor is version 1.0.3 of the [INA library][INAlib].
+They will be installed retrieved directly from the project repositories.
 
 The following commands are provided for reference.
 ```bash
 # global install, so it can be used on other projects
 pio lib --global install SdFat CircularBuffer OneButton
+
+# global install from project repository
+pio lib --global install git@github.com:SV-Zanshin/INA.git#v1.0.3
+pio lib --global install git@github.com:mpflaga/Arduino-MemoryFree.git
 
 # external RTC (optional)
 pio lib --global install RTClib
@@ -118,7 +115,7 @@ Please run `pio test` before opening an issue asking for support.
 [bluepill]:   https://wiki.stm32duino.com/index.php?title=Blue_Pill
 [softpower]:  http://www.mosaic-industries.com/embedded-systems/microcontroller-projects/electronic-circuits/push-button-switch-turn-on/microcontroller-latching-on-off
 
-
+[piolib]:  http://docs.platformio.org/en/latest/librarymanager/index.html
 [INAlib]:  https://github.com/SV-Zanshin/INA
 [INAfork]: https://github.com/avaldebe/INA/tree/stm32f1
 [SdFat]:   https://github.com/greiman/SdFat
