@@ -78,7 +78,7 @@ are defined on  `src/config.h`. Change as needed and copile the project with `pi
 
 ## Local libraries on lib path
 The libraries on `lib/` provide simplified interfaces to the RTC object (`lib/RTCutil`),
-display/serial `Print` objects (`lib/util/TERMutil`),
+display/serial `Print` objects (`lib/TERMutil`),
 and the buffering of INA measurements (`lib/util/INAbufer`).
 
 ## External library dependencies
