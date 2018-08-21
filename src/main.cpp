@@ -69,12 +69,9 @@ void setup() {
   // 1st splash page
   TERMINAL.println(F("PowerLogger"));
 #ifdef GIT_REV
-  TERMINAL.println(F("\nRev:"));
-  TERMINAL.println(F(GIT_REV));
+  TERMINAL.print(F("\nRev:\n" GIT_REV "\n"));
 #endif
-  TERMINAL.println(F("\nBuild:"));
-  TERMINAL.println(F(__DATE__));
-  TERMINAL.println(F(__TIME__));
+  TERMINAL.print(F("\nBuild:\n" __DATE__ "\n" __TIME__ "\n"));
   TERMINAL_clear(2000);                   // wait 2 sec before continuing
 
   // 2nd splash page
