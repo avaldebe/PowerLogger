@@ -1,6 +1,6 @@
 {
     "name": "PowerLogger/RTCutil",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "build": {
       "flags": "-D BUILD_TIME=$UNIX_TIME"
     },
