@@ -91,17 +91,15 @@ the [PlatformIO Library Manager][piolib] will download and install all the depen
 They will be installed to `~/.platformio/lib`, which is assumed to be the global library path.
 For a local install comment the `libdeps_dir` definition on `platformio.ini`.
 
-The [MemoryFree library][MemoryFree] is not available on the [Library Manager][piolib],
-nor is version 1.0.3 of the [INA library][INAlib].
-They will be installed retrieved directly from the project repositories.
-
 The following commands are provided for reference.
 ```bash
 # global install, so it can be used on other projects
-pio lib --global install SdFat CircularBuffer OneButton RTClib U8g2
+pio lib --global install INA SdFat CircularBuffer OneButton RTClib U8g2
+```
 
+The [MemoryFree library][MemoryFree] is not available on the [Library Manager][piolib], so we need to specify project repository.
+```bash
 # global install from project repository
-pio lib --global install git@github.com:SV-Zanshin/INA.git#v1.0.3
 pio lib --global install git@github.com:mpflaga/Arduino-MemoryFree.git
 ```
 

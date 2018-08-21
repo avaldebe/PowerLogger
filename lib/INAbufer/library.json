@@ -7,7 +7,7 @@
     "dependencies": [ 
       { 
         "name": "INA",
-        "version": "git@github.com:SV-Zanshin/INA.git#v1.0.3", 
+        "version": ">=1.0.3", 
         "author":"Arnd"
       },
       {
