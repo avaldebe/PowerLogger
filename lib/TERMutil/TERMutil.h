@@ -5,6 +5,18 @@
   #ifndef DISPLAY_SIZE
   #error "Missing DISPLAY_SIZE flag, try again with -DDISPLAY_SIZE=0x8040"
   #endif
+  #include <stdint.h>
+  // decode DISPLAY_SIZE,
+  // display.size:          hex defined by DISPLAY_SIZE flag (eg 0x8040)
+  // display.pixel.width:   display width in pixels          (eg 128 pixels)
+  // display.pixel.height:  display height in pixels         (eg  32 pixels)
+  // display.text.cols:     max text cols (width/8)          (eg  16 cols)
+  // display.text.rows      max text rows (height/8)         (eg   8 rows)
+  const union {
+    uint16_t size;
+    struct { uint16_t height:8,  width:8;   } pixel;
+    struct { uint16_t :3,rows:5, :3,cols:5; } text;
+  } display = { DISPLAY_SIZE };
 
   #include <U8x8lib.h>
   #if   HAST_U8X8 == 1305 && DISPLAY_SIZE == 0x8040

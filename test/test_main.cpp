@@ -171,6 +171,34 @@ void button_wait(uint16_t wait_ms=2000) { // 1 sec max, by default
   }
 }
 
+void test_Display(void) {
+  TERM(F("Display"));
+#ifndef HAST_U8X8
+  TEST_IGNORE_MESSAGE("No display, skip test");
+#else
+  TERMINAL.print(F("size: 0x"));
+  TERMINAL.println(display.size, HEX);
+  TERMINAL.print(F("pixs: "));
+  TERMINAL.print(display.pixel.width);
+  TERMINAL.print(F("x"));
+  TERMINAL.println(display.pixel.height);
+  TERMINAL.print(F("text: "));
+  TERMINAL.print(display.text.cols);
+  TERMINAL.print(F("x"));TERMINAL.println(display.text.rows);
+
+  TERM(F("  width"));
+  bool ok = TERMINAL.getCols() == display.text.cols;
+  TEST_TERM(ok, "Wrong display width");
+
+  TERM(F("  height"));
+  ok = TERMINAL.getRows() == display.text.rows;
+  TEST_TERM(ok, "Wrong display height");
+
+  TERMINAL.drawGlyph(display.text.cols-1, 0, 'C');
+  TERMINAL.drawGlyph(0, display.text.rows-1, 'R');
+#endif
+}
+
 void test_UI(void) {
   TERM(F("UI"));
 #ifndef HAST_U8X8
@@ -205,6 +233,7 @@ void setup() {
   TERMINAL_begin();                // start TERMINAL
   while (!Serial) { delay(10); }   // wait for USB Serial
   UNITY_BEGIN();
+  RUN_TEST(test_Display);
   RUN_TEST(test_MEM);
 
   TERM_CLEAR(1000);
