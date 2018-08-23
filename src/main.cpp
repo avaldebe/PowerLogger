@@ -95,12 +95,11 @@ void setup() {
 
 void loop() {
   static uint32_t last = 0;
-  if (millis()-last<FREQUENCY) {
+  do { // test at least once
     // check for button presses untill is time for a new Record
     button.tick();
     delay(10);
-    return;
-  }
+  } while (millis()-last<FREQUENCY);
   last = millis();
 
   // measurements from all INA devices
