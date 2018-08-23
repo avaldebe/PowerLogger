@@ -81,20 +81,16 @@ void test_INA(void) {
   TERM(F("INA"));
 
   TERM(F("  count"));
-  uint8_t count = INA.begin(1,100000);
+  uint8_t count = Record::init();
   TEST_TERM(INA_COUNT==count, "INA devices found");
 
-  INA.setBusConversion(INA_CONVTIME);     // see config.h for value
-  INA.setShuntConversion(INA_CONVTIME);   // see config.h for value
-  INA.setAveraging(INA_SAMPLES);          // see config.h for value
-  INA.setMode(INA_MODE_CONTINUOUS_BOTH);  // bus&shunt
-
   TERM(F("  offset"));
+  Record record(millis());
   for (uint8_t i=0; i<INA_COUNT; i++) {
-    uint32_t mv = INA.getBusMilliVolts(i);
-    uint32_t ua = INA.getBusMicroAmps(i);
-    TEST_TERM(mv==0, "INA.getBusMilliVolts !=0");
-    TEST_TERM(ua==0, "INA.getBusMicroAmps !=0");
+    uint32_t mv = record.getMilliVolts(i);
+    uint32_t ua = record.getMicroAmps(i);
+    TEST_TERM(mv==0, "INA mV != 0");
+    TEST_TERM(ua==0, "INA uA != 0");
   }
 }
 

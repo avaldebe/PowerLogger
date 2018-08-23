@@ -21,7 +21,8 @@ public:
   static char *getRunTime(uint32_t secs);
   inline char *getRunTime(){ return getRunTime(time/1000); }
 
-  static void init(Print* out);
+  static uint8_t init();
+  static uint8_t init(Print* out);
   void header(Print* out);
   void print(Print* out);
   void splash(Print* out, uint8_t width=16, bool header=true);
@@ -31,9 +32,6 @@ protected:
   uint32_t milliVolts[INA_COUNT];
   uint32_t microAmps[INA_COUNT];
 };
-
-#include <INA.h>
-extern INA_Class INA;
 
 #include <CircularBuffer.h>
 extern CircularBuffer<Record*, BUFFER_SIZE> buffer;

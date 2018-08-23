@@ -1,8 +1,11 @@
 #include "INAbufer.h"                     // secret sauce ;-)
-INA_Class INA;
 CircularBuffer<Record*, BUFFER_SIZE> buffer;
-
 static char linebuffer[16];               // long enough for 1 line
+
+#include <INA.h>
+INA_Class INA;
+static const uint8_t  maxBusAmps = 1;
+static const uint32_t microOhmR = 100000;
 
 Record::Record(uint32_t time): time(time) {
   for (uint8_t i=0; i<INA_COUNT; i++) {
@@ -20,21 +23,27 @@ char *Record::getRunTime(uint32_t s){
   return linebuffer;
 }
 
-void Record::init(Print* out){
-  uint8_t INAfound = INA.begin(1,100000); // maxBusAmps,microOhmR
-  while (INAfound != INA_COUNT) {
-    out->print(F("ERROR: INA devices expected "));
-    out->print(INA_COUNT);
-    out->print(F(", found "));
-    out->println(INAfound);
-    delay(100);
-  }
+uint8_t Record::init(){
+  uint8_t INAfound = INA.begin(maxBusAmps, microOhmR);
   INA.setBusConversion(INA_CONVTIME);     // see config.h for value
   INA.setShuntConversion(INA_CONVTIME);   // see config.h for value
   INA.setAveraging(INA_SAMPLES);          // see config.h for value
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);  // bus&shunt
+  return INAfound;
+}
 
-  for (uint8_t i=0; i<INA_COUNT; i++) {
+uint8_t Record::init(Print* out){
+  uint8_t INAfound = init();
+  while (INAfound != INA_COUNT) {  
+    out->print(F("ERROR: INA devices expected "));
+    out->print(INA_COUNT);
+    out->print(F(", found "));
+    out->println(INAfound);
+    delay(1000);
+    INAfound = init(); // try again
+  }
+
+  for (uint8_t i=0; i<INAfound; i++) {
     out->print(F("INA"));
     out->print(i);
     out->print(F(": "));
@@ -46,6 +55,8 @@ void Record::init(Print* out){
   out->print(F("Bx"));
   out->print(BUFFER_SIZE);
   out->println("rec");
+
+  return INAfound;
 }
 
 void Record::header(Print* out) {
