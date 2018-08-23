@@ -14,9 +14,9 @@ public:
 
   inline uint32_t getTime() { return time; }
   inline uint32_t getMilliVolts(uint8_t i) { return (i<INA_COUNT)?milliVolts[i]:0; }
-  inline uint32_t getMmicroAmps(uint8_t i) { return (i<INA_COUNT)?microAmps[i]:0; }
+  inline uint32_t getMicroAmps(uint8_t i) { return (i<INA_COUNT)?microAmps[i]:0; }
   inline float getVolts(uint8_t i) { return (float)getMilliVolts(i)/1000; }
-  inline float getAmps(uint8_t i) { return (float)getMmicroAmps(i)/1000000; }
+  inline float getAmps(uint8_t i) { return (float)getMicroAmps(i)/1000000; }
 
   static char *getRunTime(uint32_t secs);
   inline char *getRunTime(){ return getRunTime(time/1000); }
