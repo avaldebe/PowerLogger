@@ -58,6 +58,7 @@ Measurements will continue, but they will not be saved to the buffer
 until recording is resumed.
 
 Safe shutdown can be implemented with [additional circuitry][softpower].
+(for 3.3V replace the IRF7319 by a IRF7317, as sugested [here][battery]).
 A long press will write buffet to the SD card and power down the logger.
 A subsequent single press will power up the logger.
 
@@ -112,6 +113,7 @@ Please run `pio test` before opening an issue asking for support.
 [GreatScott]: https://www.instructables.com/id/Make-Your-Own-Power-MeterLogger/
 [bluepill]:   https://wiki.stm32duino.com/index.php?title=Blue_Pill
 [softpower]:  http://www.mosaic-industries.com/embedded-systems/microcontroller-projects/electronic-circuits/push-button-switch-turn-on/microcontroller-latching-on-off
+[battery]: http://www.mosaic-industries.com/embedded-systems/microcontroller-projects/electronic-circuits/push-button-switch-turn-on/switching-battery-power
 
 [piolib]:  http://docs.platformio.org/en/latest/librarymanager/index.html
 [INAlib]:  https://github.com/SV-Zanshin/INA
