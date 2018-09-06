@@ -8,12 +8,10 @@ static const uint8_t reset = U8X8_PIN_NONE; // triger the right U8X8 constructor
 #endif
 #if HAST_U8X8 != 1701 && HAST_U8X8 != 8544  // 1st hardware I2C
   TERMINAL_TYPE TERMINAL(reset);
-#elif defined DISPLAY_CS                    // 1st hardware SPI
-  TERMINAL_TYPE TERMINAL(DISPLAY_CS, MOSI, reset);
-#elif defined SS1 && defined MOSI1          // 2nd hardware SPI
-  TERMINAL_TYPE TERMINAL(SS1, MOSI1, reset);
-#else                                       // hard coded SW SPI
-  TERMINAL_TYPE TERMINAL(PB13,PB14,PB12,PB15,reset);// SCK2,MISO2,NSS2,MOSI2,none
+#elif defined(DISPLAY_SW_SPI)               // SW SPI
+  TERMINAL_TYPE TERMINAL(DISPLAY_SW_SPI,reset);
+#else
+  #error "Missing DISPLAY_SW_SPI flag, try again with -DISPLAY_SW_SPI=clock,data,cs,dc"
 #endif
 
 void TERMINAL_begin(){
