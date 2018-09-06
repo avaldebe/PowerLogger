@@ -33,7 +33,10 @@ protected:
   uint32_t microAmps[INA_COUNT];
 };
 
+#define RECORD_SIZE   ((1+2*INA_COUNT)*sizeof(uint32_t)) // size of 1 record
+#define BUFFER_LEN    (BUFFER_SIZE/RECORD_SIZE)          // records in buffer
+
 #include <CircularBuffer.h>
-extern CircularBuffer<Record*, BUFFER_SIZE> buffer;
+extern CircularBuffer<Record*, BUFFER_LEN> buffer;
 
 #endif

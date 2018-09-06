@@ -37,9 +37,8 @@
 #ifndef INA_COUNT                      // Number if INA devices
 #define INA_COUNT        3             // default
 #endif
-#define RECORD_SIZE    (1+2*INA_COUNT)
-#ifndef BUFFER_SIZE                    // Number of records in buffer
-#define BUFFER_SIZE    128/sizeof(uint32_t)/RECORD_SIZE // 128 bytes
+#ifndef BUFFER_SIZE                   // Max buffer size
+#define BUFFER_SIZE    128            // bytes
 #endif
 
 #endif
