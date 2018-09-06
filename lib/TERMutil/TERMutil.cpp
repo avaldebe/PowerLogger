@@ -12,8 +12,8 @@ static const uint8_t reset = U8X8_PIN_NONE; // triger the right U8X8 constructor
   TERMINAL_TYPE TERMINAL(DISPLAY_CS, MOSI, reset);
 #elif defined SS1 && defined MOSI1          // 2nd hardware SPI
   TERMINAL_TYPE TERMINAL(SS1, MOSI1, reset);
-#else                                       // default SPI chip sepect
-  TERMINAL_TYPE TERMINAL(SS, MOSI, reset);
+#else                                       // hard coded SW SPI
+  TERMINAL_TYPE TERMINAL(PB13,PB14,PB12,PB15,reset);// SCK2,MISO2,NSS2,MOSI2,none
 #endif
 
 void TERMINAL_begin(){
