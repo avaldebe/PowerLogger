@@ -47,9 +47,9 @@
   #elif HAST_U8X8 == 1701 && DISPLAY_SIZE == 0x8040
     #define TERMINAL_TYPE U8X8_UC1701_MINI12864_4W_HW_SPI     // default SPI chip sepect
   #elif HAST_U8X8 == 8544 && DISPLAY_SIZE == 0x5430 && defined DISPLAY_CS
-    #define TERMINAL_TYPE U8X8_PCD8544_84X48_4W_HW_SPI         //  Nokia 5110 LCD, 1st hardware SPI
+    #define TERMINAL_TYPE U8X8_PCD8544_84X48_4W_HW_SPI        //  Nokia 5110 LCD, 1st hardware SPI
   #elif HAST_U8X8 == 8544 && DISPLAY_SIZE == 0x5430 && defined SS1 && defined MOSI1
-    #define TERMINAL_TYPE U8X8_PCD8544_84X48_2ND_4W_HW_SPI     //  Nokia 5110 LCD, 2nd hardware SPI
+    #define TERMINAL_TYPE U8X8_PCD8544_84X48_2ND_4W_HW_SPI    //  Nokia 5110 LCD, 2nd hardware SPI
   #elif HAST_U8X8 == 8544 && DISPLAY_SIZE == 0x5430
     #define TERMINAL_TYPE U8X8_PCD8544_84X48_4W_HW_SPI        // default SPI chip sepect
   #else
