@@ -10,8 +10,15 @@ static const uint8_t reset = U8X8_PIN_NONE; // triger the right U8X8 constructor
   TERMINAL_TYPE TERMINAL(reset);
 #elif defined(DISPLAY_SW_SPI)               // SW SPI
   TERMINAL_TYPE TERMINAL(DISPLAY_SW_SPI,reset);
+#elif defined(DISPLAY_HW_SPI)               // HW SPI1
+  TERMINAL_TYPE TERMINAL(DISPLAY_HW_SPI,reset);
+#elif defined(DISPLAY_H2_SPI)               // HW SPI2
+  TERMINAL_TYPE TERMINAL(DISPLAY_H2_SPI,reset);
 #else
-  #error "Missing DISPLAY_SW_SPI flag, try again with -DISPLAY_SW_SPI=clock,data,cs,dc"
+  #warning "Missing DISPLAY_SW_SPI flag, e.g. -D DISPLAY_SW_SPI=clock,data,cs,dc"
+  #warning "Missing DISPLAY_HW_SPI flag, e.g. -D DISPLAY_HW_SPI=cs,dc"
+  #warning "Missing DISPLAY_H2_SPI flag, e.g. -D DISPLAY_H2_SPI=cs,dc"
+  #error "Missing DISPLAY_??_SPI flags, set one according your pinout"
 #endif
 
 void TERMINAL_begin(){
