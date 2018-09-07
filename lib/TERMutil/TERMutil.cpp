@@ -25,24 +25,13 @@ void TERMINAL_begin(){
   TERMINAL.begin();
   TERMINAL.setFont(u8x8_font_chroma48medium8_r);
   TERMINAL.clear();
-
-#ifdef BACKLIGHT_PIN
-  // display backlight attached/controlled by BACKLIGHT_PIN
-  pinMode(BACKLIGHT_PIN, OUTPUT);
-  digitalWrite(BACKLIGHT_PIN, HIGH);  // backlight on
-#endif
 }
 
 void TERMINAL_toggle() {
-  static bool is_on = true;           // backlight on
-  is_on ^= true; // same as !is_on
-#ifdef BACKLIGHT_PIN
-  // display backlight attached/controlled by BACKLIGHT_PIN
-  digitalWrite(BACKLIGHT_PIN, is_on?HIGH:LOW);
-#else
+  static bool is_on = true;               // backlight on
+  is_on ^= true;                          // same as !is_on
   // enable (1) or disable (0) power save mode for the display
   TERMINAL.setPowerSave(is_on?0:1);
-#endif
 }
 
 #endif

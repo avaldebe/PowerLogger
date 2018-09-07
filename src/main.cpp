@@ -51,6 +51,7 @@ OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
 bool recording = false;                   // write to SD (or not)
 void recording_toggle();
 void safe_shutdown();
+void backlight_toggle();
 
 void setup() {
   rtc_init();                             // set RTC if needed
@@ -62,7 +63,14 @@ void setup() {
 #endif
   button.attachClick(recording_toggle);   // pause/resume buffering
   button.attachPress(safe_shutdown);      // dump buffen and power down
-  button.attachDoubleClick(TERMINAL_toggle);  // switch backlight/display on/off
+#ifdef BACKLIGHT_PIN
+  button.attachDoubleClick(backlight_toggle); // switch backlight on/off
+  // display backlight attached/controlled by BACKLIGHT_PIN
+  pinMode(BACKLIGHT_PIN, OUTPUT);
+  digitalWrite(BACKLIGHT_PIN, LOW);       // backlight off
+#else
+  button.attachDoubleClick(TERMINAL_toggle);  // switch display on/off
+#endif
 
   TERMINAL_begin();                       // start TERMINAL
 
@@ -157,4 +165,13 @@ void safe_shutdown(){
   TERMINAL.println(F("Remove power"));
 #endif
   while (true) { delay(100); }
+}
+
+void backlight_toggle() {
+#ifdef BACKLIGHT_PIN
+  bool is_on = digitalRead(BACKLIGHT_PIN);  // backlight on?
+  is_on ^= true;                            // same as !is_on
+  // display backlight attached/controlled by BACKLIGHT_PIN
+  digitalWrite(BACKLIGHT_PIN, is_on?HIGH:LOW);
+#endif
 }
