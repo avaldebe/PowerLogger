@@ -6,7 +6,7 @@
 #else
   static const uint8_t reset = U8X8_PIN_NONE; // triger the right U8X8 constructor
 #endif
-#if HAST_U8X8 != 1701 && HAST_U8X8 != 8544  // 1st hardware I2C
+#if HAST_U8X8 != UC1701 && HAST_U8X8 != PCD8544  // 1st hardware I2C
   TERMINAL_TYPE TERMINAL(reset);
 #elif defined(DISPLAY_SW_SPI)               // SW SPI
   TERMINAL_TYPE TERMINAL(DISPLAY_SW_SPI,reset);
