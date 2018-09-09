@@ -1,24 +1,20 @@
-#ifdef HAST_U8X8
 #include "TERMutil.h"
+#ifdef TERM_U8X8
 
 #ifdef DISPLAY_RST
   static const uint8_t reset = DISPLAY_RST;
 #else
   static const uint8_t reset = U8X8_PIN_NONE; // triger the right U8X8 constructor
 #endif
-#if HAST_U8X8 != UC1701 && HAST_U8X8 != PCD8544  // 1st hardware I2C
-  TERMINAL_TYPE TERMINAL(reset);
-#elif defined(DISPLAY_SW_SPI)               // SW SPI
-  TERMINAL_TYPE TERMINAL(DISPLAY_SW_SPI,reset);
+
+#if   defined(DISPLAY_SW_SPI)               // SW SPI
+  TERM_U8X8 TERMINAL(DISPLAY_SW_SPI,reset);
 #elif defined(DISPLAY_HW_SPI)               // HW SPI1
-  TERMINAL_TYPE TERMINAL(DISPLAY_HW_SPI,reset);
+  TERM_U8X8 TERMINAL(DISPLAY_HW_SPI,reset);
 #elif defined(DISPLAY_H2_SPI)               // HW SPI2
-  TERMINAL_TYPE TERMINAL(DISPLAY_H2_SPI,reset);
+  TERM_U8X8 TERMINAL(DISPLAY_H2_SPI,reset);
 #else
-  #warning "Missing DISPLAY_SW_SPI flag, e.g. -D DISPLAY_SW_SPI=clock,data,cs,dc"
-  #warning "Missing DISPLAY_HW_SPI flag, e.g. -D DISPLAY_HW_SPI=cs,dc"
-  #warning "Missing DISPLAY_H2_SPI flag, e.g. -D DISPLAY_H2_SPI=cs,dc"
-  #error "Missing DISPLAY_??_SPI flags, set one according your pinout"
+  TERM_U8X8 TERMINAL(reset);
 #endif
 
 void TERMINAL_begin(){

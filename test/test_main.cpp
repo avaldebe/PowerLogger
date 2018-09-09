@@ -42,7 +42,11 @@ OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
 // TERMINAL for additional messages
 #ifdef NO_TERMINAL
   // messages via TEST_ASSERT_MESSAGE
-#elif defined(HAST_U8X8)
+#elif defined(DISPLAY_64X48) || \
+      defined(DISPLAY_84X48) || \
+      defined(DISPLAY_128X32)|| \
+      defined(DISPLAY_128X64)|| \
+      defined(DISPLAY_128X128)
   // messages to DISPLAY
 #elif defined(HAVE_HWSERIAL1) || defined(__STM32F1__) || defined(ESP32)
   #define TERMINAL Serial1
@@ -169,7 +173,7 @@ void button_wait(uint16_t wait_ms=2000) { // 1 sec max, by default
 
 void test_Display(void) {
   TERM(F("Display"));
-#ifndef HAST_U8X8
+#ifndef TERM_U8X8
   TEST_IGNORE_MESSAGE("No display, skip test");
 #else
   TERMINAL.print(F("size: 0x"));
@@ -197,7 +201,7 @@ void test_Display(void) {
 
 void test_UI(void) {
   TERM(F("UI"));
-#ifndef HAST_U8X8
+#ifndef TERM_U8X8
   TEST_IGNORE_MESSAGE("No display, skip test");
 #else
 #ifdef SHORTPRESS
