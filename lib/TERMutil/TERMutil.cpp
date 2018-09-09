@@ -2,9 +2,9 @@
 #include "TERMutil.h"
 
 #ifdef DISPLAY_RST
-static const uint8_t reset = DISPLAY_RST;
+  static const uint8_t reset = DISPLAY_RST;
 #else
-static const uint8_t reset = U8X8_PIN_NONE; // triger the right U8X8 constructor
+  static const uint8_t reset = U8X8_PIN_NONE; // triger the right U8X8 constructor
 #endif
 #if HAST_U8X8 != 1701 && HAST_U8X8 != 8544  // 1st hardware I2C
   TERMINAL_TYPE TERMINAL(reset);

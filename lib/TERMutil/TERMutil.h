@@ -69,8 +69,8 @@
     #define TERMINAL Serial
     #endif
     inline void TERMINAL_begin(uint32_t baudrate=57600){
-        TERMINAL.begin(baudrate);        // 57600 for ATmega328p 3.3V 8Mhz
-        while(!TERMINAL){ delay(10); }   // wait for USB Serial
+      TERMINAL.begin(baudrate);        // 57600 for ATmega328p 3.3V 8Mhz
+      while(!TERMINAL){ delay(10); }   // wait for USB Serial
     }
   #endif
   inline void TERMINAL_clear(uint32_t ms=0){ delay(ms); }
