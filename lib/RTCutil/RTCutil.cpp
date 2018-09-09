@@ -12,6 +12,7 @@
 #define PCF8563 8563
 
 #if   HAST_RTC == INTERNAL_32kHz || HAST_RTC == INTERNAL_62kHz
+  #define INTERNAL_RTC
   #ifndef __STM32F1__
   #error "Internal RTC options only for STM32F1"
   #endif
@@ -47,7 +48,7 @@ bool rtc_stale(){ return rtc_now()<BUILD_TIME; }
 void rtc_init(){ if(rtc_stale()) { rtc_now(BUILD_TIME); } }
 
 uint32_t rtc_now(){
-#if   HAST_RTC == INTERNAL_32kHz  || HAST_RTC == INTERNAL_62kHz
+#ifdef INTERNAL_RTC
   rtc.getTime(now);
   unixtime = rtc.getTime();
 #else
@@ -58,7 +59,7 @@ uint32_t rtc_now(){
 }
 
 uint32_t rtc_now(uint32_t time){
-#if   HAST_RTC == INTERNAL_32kHz  || HAST_RTC == INTERNAL_62kHz
+#ifdef INTERNAL_RTC
   rtc.setTime(time);
 #else
   rtc.adjust(DateTime(time));
@@ -69,7 +70,7 @@ uint32_t rtc_now(uint32_t time){
 char *rtc_fmt(const char fmt){
   static char str[16];               // long enough for 1 line
   switch (fmt) {
-#if   HAST_RTC == INTERNAL_32kHz  || HAST_RTC == INTERNAL_62kHz
+#ifdef INTERNAL_RTC
   case 'D': // long date
     sprintf(str, "%04u-%02u-%02u", 2000+now.year, now.month, now.day);
     break;

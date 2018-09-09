@@ -144,12 +144,12 @@ void test_RTC(void) {
 #ifndef HAST_RTC
   TEST_IGNORE_MESSAGE("No RTC, skip test");
 #else
-#if HAST_RTC != 32768 && HAST_RTC != 62500
+  #ifdef INTERNAL_RTC
   TERM(F("  exists"));
   Wire.beginTransmission(0x68);
   uint8_t error = Wire.endTransmission();
   TEST_TERM(error==0, "RTC not found");
-#endif
+  #endif
   TERM(F("  running"));
   rtc_init();  // update RTC if needed
   bool ok = !rtc_stale();
