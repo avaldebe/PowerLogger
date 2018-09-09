@@ -10,44 +10,42 @@
 #define UC1701    1701
 #define PCD8544   8544
 
-#ifdef DISPLAY_64X48
+#if   defined(TERM_U8X8) && defined(DISPLAY_SIZE)
+  // defined directly on platfromio.ini
+#elif defined(DISPLAY_64X48)
   #define DISPLAY_SIZE 0x4030
-  #if   DISPLAY_64X48 == SSD1306  // WEMOS/LOLIN D1 mini OLED shield
+  #ifdef TERM_U8X8
+  #elif DISPLAY_64X48 == SSD1306  // WEMOS/LOLIN D1 mini OLED shield
     #define TERM_U8X8 U8X8_SSD1306_64X48_ER_F_HW_I2C
   #else
     #error "Unsuported DISPLAY_64X48"
   #endif
-#endif
-
-#ifdef DISPLAY_84X48
+#elif defined(DISPLAY_84X48)
   #define DISPLAY_SIZE 0x5430
-  #if   DISPLAY_84X48 == PCD8544  // Nokia 5110 LCD
-    #if   defined(DISPLAY_SW_SPI)           // SW SPI
-      #define TERM_U8X8 U8X8_PCD8544_84X48_4W_SW_SPI
-    #elif defined(DISPLAY_HW_SPI)           // HW SPI
-      #define TERM_U8X8 U8X8_PCD8544_84X48_4W_HW_SPI
-    #elif defined(DISPLAY_H2_SPI)           // HW SPI2
-      #define TERM_U8X8 U8X8_PCD8544_84X48_2ND_4W_HW_SPI
-    #endif
+  #ifdef TERM_U8X8
+  #elif DISPLAY_84X48 == PCD8544 && defined(DISPLAY_SW_SPI) // Nokia 5110 LCD, SW SPI
+    #define TERM_U8X8 U8X8_PCD8544_84X48_4W_SW_SPI
+  #elif DISPLAY_84X48 == PCD8544 && defined(DISPLAY_HW_SPI) // Nokia 5110 LCD, HW SPI
+    #define TERM_U8X8 U8X8_PCD8544_84X48_4W_HW_SPI
+  #elif DISPLAY_84X48 == PCD8544 && defined(DISPLAY_H2_SPI) // Nokia 5110 LCD, HW SPI2
+    #define TERM_U8X8 U8X8_PCD8544_84X48_2ND_4W_HW_SPI
   #else
     #error "Unsuported DISPLAY_84X48"
   #endif
-#endif
-
-#ifdef DISPLAY_128X32
+#elif defined(DISPLAY_128X32)
   #define DISPLAY_SIZE 0x8020
-  #if   DISPLAY_128X32 == SSD1305
+  #ifdef TERM_U8X8
+  #elif DISPLAY_128X32 == SSD1305
     #define TERM_U8X8 U8X8_SSD1305_128X32_NONAME_HW_I2C
   #elif DISPLAY_128X32 == SSD1306
     #define TERM_U8X8 U8X8_SSD1306_128X32_UNIVISION_HW_I2C
   #else
     #error "Unsuported DISPLAY_128X32"
   #endif
-#endif
-
-#ifdef DISPLAY_128X64
+#elif defined(DISPLAY_128X64)
   #define DISPLAY_SIZE 0x8040
-  #if   DISPLAY_128X64 == SSD1305
+  #ifdef TERM_U8X8
+  #elif DISPLAY_128X64 == SSD1305
     #define TERM_U8X8 U8X8_SSD1305_128X64_ADAFRUIT_HW_I2C
   #elif DISPLAY_128X64 == SSD1306
     #define TERM_U8X8 U8X8_SSD1306_128X64_NONAME_HW_I2C
@@ -60,34 +58,27 @@
     #define TERM_U8X8 U8X8_SH1106_128X64_NONAME_HW_I2C
   //#define TERM_U8X8 U8X8_SH1106_128X64_VCOMH0_HW_I2C
   //#define TERM_U8X8 U8X8_SH1106_128X64_WINSTAR_HW_I2C
-  #elif DISPLAY_128X64 == UC1701
-    #if   defined(DISPLAY_SW_SPI)           // SW SPI
-      #define TERM_U8X8 U8X8_UC1701_MINI12864_4W_SW_SPI
-    #elif defined(DISPLAY_HW_SPI)           // HW SPI
-      #define TERM_U8X8 U8X8_UC1701_MINI12864_4W_HW_SPI
-    #elif defined(DISPLAY_H2_SPI)           // HW SPI2
-      #define TERM_U8X8 U8X8_UC1701_MINI12864_2ND_4W_HW_SPI
-    #endif
+  #elif DISPLAY_128X64 == UC1701 && defined(DISPLAY_SW_SPI) // SW SPI
+    #define TERM_U8X8 U8X8_UC1701_MINI12864_4W_SW_SPI
+  #elif DISPLAY_128X64 == UC1701 && defined(DISPLAY_HW_SPI) // HW SPI
+    #define TERM_U8X8 U8X8_UC1701_MINI12864_4W_HW_SPI
+  #elif DISPLAY_128X64 == UC1701 && defined(DISPLAY_H2_SPI) // HW SPI2
+    #define TERM_U8X8 U8X8_UC1701_MINI12864_2ND_4W_HW_SPI
   #else
     #error "Unsuported DISPLAY_128X64"
   #endif
-#endif
-
-#ifdef DISPLAY_128X128
+#elif defined(DISPLAY_128X128)
   #define DISPLAY_SIZE 0x8080
-  #if   DISPLAY_128X128 == SH1107
+  #ifdef TERM_U8X8
+  #elif DISPLAY_128X128 == SH1107
     #define TERM_U8X8 U8X8_SH1107_128X128_HW_I2C
   #else
     #error "Unsuported DISPLAY_128X128"
   #endif
 #endif
 
-#ifdef TERM_U8X8
-  // it is possible to define TERM_U8X8/DISPLAY_SIZE directly on platfromio.ini
-  #ifndef DISPLAY_SIZE
-    #error "Missing DISPLAY_SIZE flag, e.g. -D DISPLAY_SIZE=0x8040"
-  #endif
-  // decode DISPLAY_SIZE,
+#ifdef DISPLAY_SIZE
+  // decode DISPLAY_SIZE
   // display.size:          hex defined by DISPLAY_SIZE flag (eg 0x8040)
   // display.pixel.width:   display width in pixels          (eg 128 pixels)
   // display.pixel.height:  display height in pixels         (eg  32 pixels)
@@ -99,14 +90,39 @@
     struct { uint16_t height:8,  width:8;   } pixel;
     struct { uint16_t :3,rows:5, :3,cols:5; } text;
   } display = { DISPLAY_SIZE };
+#endif
 
+#ifdef TERM_U8X8
   #include <U8x8lib.h>
-  extern TERM_U8X8 TERMINAL;
+  #ifdef DISPLAY_RST
+    static const uint8_t reset = DISPLAY_RST;
+  #else
+    static const uint8_t reset = U8X8_PIN_NONE; // triger the right U8X8 constructor
+  #endif
+  #if   defined(DISPLAY_SW_SPI)               // SW SPI
+    TERM_U8X8 TERMINAL(DISPLAY_SW_SPI,reset);
+  #elif defined(DISPLAY_HW_SPI)               // HW SPI1
+    TERM_U8X8 TERMINAL(DISPLAY_HW_SPI,reset);
+  #elif defined(DISPLAY_H2_SPI)               // HW SPI2
+    TERM_U8X8 TERMINAL(DISPLAY_H2_SPI,reset);
+  #else
+    TERM_U8X8 TERMINAL(reset);
+  #endif
 
-  void TERMINAL_begin();
+  void TERMINAL_begin(){
+    TERMINAL.begin();
+    TERMINAL.setFont(u8x8_font_chroma48medium8_r);
+    TERMINAL.clear();
+  }
   inline void TERMINAL_clear(uint32_t ms=0){ delay(ms);TERMINAL.clear(); }
   inline void TERMINAL_home(){ TERMINAL.home(); }
-  void TERMINAL_toggle();
+  void TERMINAL_toggle() {
+    static bool is_on = true;               // backlight on
+    is_on ^= true;                          // same as !is_on
+    // enable (1) or disable (0) power save mode for the display
+    TERMINAL.setPowerSave(is_on?0:1);
+  }
+
 #else
   #ifdef NO_TERMINAL
     inline void TERMINAL_begin(){}
