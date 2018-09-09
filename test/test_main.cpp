@@ -40,14 +40,10 @@ const char *FILENAME = "test.123";
 OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
 
 // TERMINAL for additional messages
-#ifdef NO_TERMINAL
-  // messages via TEST_ASSERT_MESSAGE
-#elif defined(DISPLAY_64X48) || \
-      defined(DISPLAY_84X48) || \
-      defined(DISPLAY_128X32)|| \
-      defined(DISPLAY_128X64)|| \
-      defined(DISPLAY_128X128)
-  // messages to DISPLAY
+#include <TERMu8x8.h>
+#if   defined(TERM_U8X8) || defined(NO_TERMINAL)
+  // TERM_U8X8:   messages to DISPLAY
+  // NO_TERMINAL: messages via TEST_ASSERT_MESSAGE
 #elif defined(HAVE_HWSERIAL1) || defined(__STM32F1__) || defined(ESP32)
   #define TERMINAL Serial1
 #elif defined(ESP8266)
@@ -66,13 +62,13 @@ OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
   #define TERM_FAIL(fail)
   #define TEST_TERM(ok, msg)  TEST_ASSERT_MESSAGE(ok, msg)
 #else
+  #include <TERMutil.h>
   #define TERM(msg)           TERMINAL.println(msg)
   #define TERM_CLEAR(ms)      TERMINAL_clear(ms)
   #define TERM_FMEM(mem)      TERMINAL.print(F("MEM "));TERMINAL.println(mem, DEC)
   #define TERM_FAIL(fail)     TERMINAL.print((fail)?F("  Fail!\n"):F(""))
   #define TEST_TERM(ok, msg)  TERM_FAIL(!(ok)); TEST_ASSERT(ok)
 #endif
-#include <TERMutil.h>
 #include <MemoryFree.h>
 
 void test_MEM(void) {
