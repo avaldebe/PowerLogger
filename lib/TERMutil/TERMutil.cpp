@@ -21,7 +21,7 @@ void TERMINAL_begin(uint32_t baudrate){
   TERMINAL.begin();
   TERMINAL.setFont(u8x8_font_chroma48medium8_r);
   TERMINAL.clear();
-#elif definded(TERMINAL)
+#elif defined(TERMINAL)
   TERMINAL.begin(baudrate);             // 57600 for ATmega328p 3.3V 8Mhz
   while(!TERMINAL){ delay(10); }        // wait for USB Serial
 #endif
