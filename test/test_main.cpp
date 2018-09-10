@@ -227,12 +227,15 @@ void test_UI(void) {
 
 void setup() {
   TERMINAL_begin();                // start TERMINAL
+  TERM(F("Wait for Serial"));
   while (!Serial) { delay(10); }   // wait for USB Serial
+  TERM_CLEAR();
+
   UNITY_BEGIN();
   RUN_TEST(test_Display);
   RUN_TEST(test_MEM);
 
-  TERM_CLEAR(1000);
+  TERM_CLEAR(2000);
   RUN_TEST(test_RTC);
   RUN_TEST(test_MEM);
 

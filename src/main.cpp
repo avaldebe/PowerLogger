@@ -116,9 +116,9 @@ void loop() {
   TERMINAL_home();
   record->splash(&TERMINAL);
   TERMINAL.print(record->getRunTime());
-  TERMINAL.print(F(" REC"));
+  TERMINAL.print(recording?F(" R:"):F(" P:"));
   TERMINAL.print(buffer.size());
-  TERMINAL.print(F("\n"));
+  TERMINAL.print(F(" \n"));
 
   if (recording) {
     buffer.unshift(record);               // buffer new record
@@ -148,8 +148,6 @@ void sd_dump(){
 void recording_toggle(){
   if (recording) { sd_dump(); }           // dump buffer to SD card
   recording = not recording;              // pause/resume buffering
-  TERMINAL_clear();
-  TERMINAL.println((recording)?F("SD resumed"):F("SD paused"));
 }
 
 void safe_shutdown(){
