@@ -27,6 +27,10 @@ public:
   void print(Print* out);
   void splash(Print* out, uint8_t width=16, bool header=true);
 
+  // size of 1 record from n channels
+  #define RECORD_SIZE(n)  ((1+2*n)*sizeof(uint32_t))
+  static inline uint8_t size(){ return RECORD_SIZE(ina_count); }
+
 protected:
   static uint8_t ina_count;
   uint32_t time;
@@ -34,8 +38,7 @@ protected:
   uint32_t microAmps[INA_COUNT];
 };
 
-#define RECORD_SIZE(n)  ((1+2*n)*sizeof(uint32_t))            // size of 1 record
-#define BUFFER_LEN      (BUFFER_SIZE/RECORD_SIZE(INA_COUNT))  // records in buffer
+#define BUFFER_LEN        (BUFFER_SIZE/RECORD_SIZE(INA_COUNT))  // records in buffer
 
 #include <CircularBuffer.h>
 extern CircularBuffer<Record*, BUFFER_LEN> buffer;

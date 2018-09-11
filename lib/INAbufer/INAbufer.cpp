@@ -52,7 +52,7 @@ uint8_t Record::init(Print* out){
   }
 
   out->print(F("Buffer "));
-  out->print(RECORD_SIZE(ina_count));
+  out->print(size());
   out->print(F("Bx"));
   out->print(BUFFER_LEN);
   out->println("rec");
