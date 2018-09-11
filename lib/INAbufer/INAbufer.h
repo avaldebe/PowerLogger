@@ -21,7 +21,7 @@ public:
   static char *getRunTime(uint32_t secs);
   inline char *getRunTime(){ return getRunTime(time/1000); }
   
-  static uint8_t init();
+  static uint8_t init(uint8_t maxBusAmps=1, uint32_t microOhmR=100000);
   static uint8_t init(Print* out);
   void header(Print* out);
   void print(Print* out);

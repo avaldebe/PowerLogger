@@ -4,8 +4,6 @@ static char linebuffer[16];               // long enough for 1 line
 
 #include <INA.h>
 INA_Class INA;
-static const uint8_t  maxBusAmps = 1;
-static const uint32_t microOhmR = 100000;
 uint8_t Record::ina_count = 0; // no devices found so far
 
 Record::Record(uint32_t time): time(time) {
@@ -26,7 +24,7 @@ char *Record::getRunTime(uint32_t s){
   return linebuffer;
 }
 
-uint8_t Record::init(){
+uint8_t Record::init(uint8_t maxBusAmps, uint32_t microOhmR){
   ina_count = INA.begin(maxBusAmps, microOhmR);
   INA.setBusConversion(INA_CONVTIME);     // see config.h for value
   INA.setShuntConversion(INA_CONVTIME);   // see config.h for value
