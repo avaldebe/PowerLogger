@@ -122,7 +122,9 @@ void loop() {
 
   if (recording) {
     buffer.unshift(record);               // buffer new record
-    if (buffer.isFull()) { sd_dump(); }   // dump buffer to CSV file
+    if (buffer.isFull() || buffer.size()>=record->max_len()) {
+      sd_dump();   // dump buffer to CSV file
+    }
   } else {
     delete record;                        // record from buffer
   }

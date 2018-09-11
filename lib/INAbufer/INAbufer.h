@@ -31,6 +31,10 @@ public:
   #define RECORD_SIZE(n)  ((1+2*n)*sizeof(uint32_t))
   static inline uint8_t size(){ return RECORD_SIZE(ina_count); }
 
+  // max reccords in buffer
+  #define BUFFER_LEN(n)   (BUFFER_SIZE/RECORD_SIZE(n))
+  static inline uint8_t max_len(){ return BUFFER_LEN(ina_count); }
+
 protected:
   static uint8_t ina_count;
   uint32_t time;
@@ -38,9 +42,7 @@ protected:
   uint32_t *microAmps;
 };
 
-#define BUFFER_LEN        (BUFFER_SIZE/RECORD_SIZE(INA_COUNT))  // records in buffer
-
 #include <CircularBuffer.h>
-extern CircularBuffer<Record*, BUFFER_LEN> buffer;
+extern CircularBuffer<Record*, BUFFER_LEN(1)> buffer;
 
 #endif

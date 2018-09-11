@@ -1,5 +1,5 @@
 #include "INAbufer.h"                     // secret sauce ;-)
-CircularBuffer<Record*, BUFFER_LEN> buffer;
+CircularBuffer<Record*, BUFFER_LEN(1)> buffer;
 static char linebuffer[16];               // long enough for 1 line
 
 #include <INA.h>
@@ -56,7 +56,7 @@ uint8_t Record::init(Print* out){
   out->print(F("Buffer "));
   out->print(size());
   out->print(F("Bx"));
-  out->print(BUFFER_LEN);
+  out->print(max_len());
   out->println("rec");
 
   return ina_count;
