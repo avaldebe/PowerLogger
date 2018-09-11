@@ -36,12 +36,9 @@ uint8_t Record::init(){
 }
 
 uint8_t Record::init(Print* out){
-  uint8_t INAfound = init();
-  while (INAfound != INA_COUNT) {  
-    out->print(F("ERROR: INA devices expected "));
-    out->print(INA_COUNT);
-    out->print(F(", found "));
-    out->println(INAfound);
+  init();
+  while (ina_count == 0) {  
+    out->print(F("ERROR: no INA devices found"));
     delay(1000);
     init(); // try again
   }

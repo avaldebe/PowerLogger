@@ -82,11 +82,11 @@ void test_INA(void) {
 
   TERM(F("  count"));
   uint8_t count = Record::init();
-  TEST_TERM(INA_COUNT==count, "INA devices found");
+  TEST_TERM(count>0, "INA devices found");
 
   TERM(F("  offset"));
   Record record(millis());
-  for (uint8_t i=0; i<INA_COUNT; i++) {
+  for (uint8_t i=0; i<count; i++) {
     uint32_t mv = record.getMilliVolts(i);
     uint32_t ua = record.getMicroAmps(i);
     TEST_TERM(mv==0, "INA mV != 0");
@@ -98,7 +98,7 @@ void test_BUF(void) {
   TERM(F("BUF"));
   TERM(F("  fill"));
   Record* record = NULL;
-  while (!buffer.isFull()) {
+  while (!buffer.isFull() && buffer.size()<record->max_len()) {
     record = new Record(millis());
     TEST_TERM(record, "Buffer too large");
     buffer.unshift(record);

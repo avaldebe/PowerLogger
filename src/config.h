@@ -34,9 +34,6 @@
 */
 
 // Measurement array and buffer size
-#ifndef INA_COUNT                      // Number if INA devices
-#define INA_COUNT        3             // default
-#endif
 #ifndef BUFFER_SIZE                   // Max buffer size
 #define BUFFER_SIZE    128            // bytes
 #endif
