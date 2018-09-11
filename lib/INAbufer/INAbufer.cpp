@@ -9,6 +9,8 @@ static const uint32_t microOhmR = 100000;
 uint8_t Record::ina_count = 0; // no devices found so far
 
 Record::Record(uint32_t time): time(time) {
+  milliVolts = new uint32_t[ina_count];
+  microAmps = new uint32_t[ina_count];
   for (uint8_t i=0; i<ina_count; i++) {
     milliVolts[i] = INA.getBusMilliVolts(i);
     microAmps[i] = INA.getBusMicroAmps(i);

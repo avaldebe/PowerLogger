@@ -10,11 +10,11 @@ class Record {
 public:
   Record(){};
 	Record(uint32_t time);
-  ~Record(){};
+  ~Record(){ delete [] milliVolts; delete [] microAmps; };
 
   inline uint32_t getTime() { return time; }
-  inline uint32_t getMilliVolts(uint8_t i) { return (i<INA_COUNT)?milliVolts[i]:0; }
-  inline uint32_t getMicroAmps(uint8_t i) { return (i<INA_COUNT)?microAmps[i]:0; }
+  inline uint32_t getMilliVolts(uint8_t i) { return (i<ina_count)?milliVolts[i]:0; }
+  inline uint32_t getMicroAmps(uint8_t i) { return (i<ina_count)?microAmps[i]:0; }
   inline float getVolts(uint8_t i) { return (float)getMilliVolts(i)/1000; }
   inline float getAmps(uint8_t i) { return (float)getMicroAmps(i)/1000000; }
 
@@ -34,8 +34,8 @@ public:
 protected:
   static uint8_t ina_count;
   uint32_t time;
-  uint32_t milliVolts[INA_COUNT];
-  uint32_t microAmps[INA_COUNT];
+  uint32_t *milliVolts;
+  uint32_t *microAmps;
 };
 
 #define BUFFER_LEN        (BUFFER_SIZE/RECORD_SIZE(INA_COUNT))  // records in buffer
