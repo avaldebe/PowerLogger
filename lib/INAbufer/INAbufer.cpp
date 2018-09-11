@@ -1,5 +1,5 @@
 #include "INAbufer.h"                     // secret sauce ;-)
-CircularBuffer<Record*, BUFFER_LEN(1)> buffer;
+CircularBuffer<Record*, BUFFER_LEN> buffer;
 static char linebuffer[16];               // long enough for 1 line
 
 #include <INA.h>
