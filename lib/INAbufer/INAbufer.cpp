@@ -6,9 +6,10 @@ static char linebuffer[16];               // long enough for 1 line
 INA_Class INA;
 static const uint8_t  maxBusAmps = 1;
 static const uint32_t microOhmR = 100000;
+uint8_t Record::ina_count = 0; // no devices found so far
 
 Record::Record(uint32_t time): time(time) {
-  for (uint8_t i=0; i<INA_COUNT; i++) {
+  for (uint8_t i=0; i<ina_count; i++) {
     milliVolts[i] = INA.getBusMilliVolts(i);
     microAmps[i] = INA.getBusMicroAmps(i);
   }
@@ -24,12 +25,12 @@ char *Record::getRunTime(uint32_t s){
 }
 
 uint8_t Record::init(){
-  uint8_t INAfound = INA.begin(maxBusAmps, microOhmR);
+  ina_count = INA.begin(maxBusAmps, microOhmR);
   INA.setBusConversion(INA_CONVTIME);     // see config.h for value
   INA.setShuntConversion(INA_CONVTIME);   // see config.h for value
   INA.setAveraging(INA_SAMPLES);          // see config.h for value
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);  // bus&shunt
-  return INAfound;
+  return ina_count;
 }
 
 uint8_t Record::init(Print* out){
@@ -40,10 +41,10 @@ uint8_t Record::init(Print* out){
     out->print(F(", found "));
     out->println(INAfound);
     delay(1000);
-    INAfound = init(); // try again
+    init(); // try again
   }
 
-  for (uint8_t i=0; i<INAfound; i++) {
+  for (uint8_t i=0; i<ina_count; i++) {
     out->print(F("INA"));
     out->print(i);
     out->print(F(": "));
@@ -51,17 +52,17 @@ uint8_t Record::init(Print* out){
   }
 
   out->print(F("Buffer "));
-  out->print(RECORD_SIZE);
+  out->print(RECORD_SIZE(ina_count));
   out->print(F("Bx"));
   out->print(BUFFER_LEN);
   out->println("rec");
 
-  return INAfound;
+  return ina_count;
 }
 
 void Record::header(Print* out) {
   out->print(F("millis"));
-  for (uint8_t i=0; i<INA_COUNT; i++) {
+  for (uint8_t i=0; i<ina_count; i++) {
     out->print(F(",ch"));out->print(i);out->print(F(" voltage [mV]"));
     out->print(F(",ch"));out->print(i);out->print(F(" current [uA]"));
   }
@@ -70,7 +71,7 @@ void Record::header(Print* out) {
 
 void Record::print(Print* out) {
 	out->print(time);
-  for (uint8_t i=0; i<INA_COUNT; i++) {
+  for (uint8_t i=0; i<ina_count; i++) {
     out->print(F(","));out->print(milliVolts[i]);
     out->print(F(","));out->print(microAmps[i]);
   }
@@ -83,7 +84,7 @@ void Record::splash(Print* out, uint8_t width, bool header) {
       //                            0123456789ABCDEF
       //                           "1: 23.000  1.000"
       if (header) { out->print(F("#   V [V]  I [A]\n")); }
-      for (uint8_t i=0; i<INA_COUNT; i++) {
+      for (uint8_t i=0; i<ina_count; i++) {
         out->print(i);out->print(F(":"));
         out->print(dtostrf(getVolts(i),7,3,linebuffer));
         out->print(dtostrf(getAmps(i) ,7,3,linebuffer));
@@ -95,7 +96,7 @@ void Record::splash(Print* out, uint8_t width, bool header) {
       //             "V1 23.000"
       //             "A1  1.000"
       header &= width > 6;
-      for (uint8_t i=0; i<INA_COUNT; i++) {
+      for (uint8_t i=0; i<ina_count; i++) {
         if (header) { out->print(F("V")); }
         out->print(i);
         out->print(dtostrf(getVolts(i),7,3,linebuffer));

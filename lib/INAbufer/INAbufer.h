@@ -20,7 +20,7 @@ public:
 
   static char *getRunTime(uint32_t secs);
   inline char *getRunTime(){ return getRunTime(time/1000); }
-
+  
   static uint8_t init();
   static uint8_t init(Print* out);
   void header(Print* out);
@@ -28,13 +28,14 @@ public:
   void splash(Print* out, uint8_t width=16, bool header=true);
 
 protected:
+  static uint8_t ina_count;
   uint32_t time;
   uint32_t milliVolts[INA_COUNT];
   uint32_t microAmps[INA_COUNT];
 };
 
-#define RECORD_SIZE   ((1+2*INA_COUNT)*sizeof(uint32_t)) // size of 1 record
-#define BUFFER_LEN    (BUFFER_SIZE/RECORD_SIZE)          // records in buffer
+#define RECORD_SIZE(n)  ((1+2*n)*sizeof(uint32_t))            // size of 1 record
+#define BUFFER_LEN      (BUFFER_SIZE/RECORD_SIZE(INA_COUNT))  // records in buffer
 
 #include <CircularBuffer.h>
 extern CircularBuffer<Record*, BUFFER_LEN> buffer;
