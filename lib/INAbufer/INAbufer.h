@@ -46,4 +46,6 @@ protected:
 #define BUFFER_LEN    BUFFER_MAX(2)
 extern CircularBuffer<Record*, BUFFER_LEN> buffer;
 
+inline bool buffer_full() { return buffer.isFull() || buffer.size()>=Record::max_len();}
+
 #endif
