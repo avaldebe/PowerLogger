@@ -9,6 +9,8 @@
 #define SH1107    1107
 #define UC1701    1701
 #define PCD8544   8544
+#define HX1230    1230
+
 
 #if   defined(TERM_U8X8) && defined(DISPLAY_SIZE)
   // defined directly on platfromio.ini
@@ -31,6 +33,18 @@
     #define TERM_U8X8 U8X8_PCD8544_84X48_2ND_4W_HW_SPI
   #else
     #error "Unsuported DISPLAY_84X48"
+  #endif
+#elif defined(DISPLAY_98X68)
+  #define DISPLAY_SIZE 0x5E44
+  #ifdef TERM_U8X8
+  #elif DISPLAY_98X68 == HX1230 && defined(DISPLAY_SW_SPI) // Nokia 5110 LCD, SW SPI
+    #define TERM_U8X8 U8X8_HX1230_96X68_4W_SW_SPI
+  #elif DISPLAY_98X68 == HX1230 && defined(DISPLAY_HW_SPI) // Nokia 5110 LCD, HW SPI
+    #define TERM_U8X8 U8X8_HX1230_96X68_4W_HW_SPI
+  #elif DISPLAY_98X68 == HX1230 && defined(DISPLAY_H2_SPI) // Nokia 5110 LCD, HW SPI2
+    #define TERM_U8X8 U8X8_HX1230_96X68_2ND_4W_HW_SPI
+  #else
+    #error "Unsuported DISPLAY_98X68"
   #endif
 #elif defined(DISPLAY_128X32)
   #define DISPLAY_SIZE 0x8020
