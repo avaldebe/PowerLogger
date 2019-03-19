@@ -98,7 +98,7 @@ void test_BUF(void) {
   TERM(F("BUF"));
   TERM(F("  fill"));
   Record* record = NULL;
-  while (!buffer.isFull() && buffer.size()<record->max_len()) {
+  while (!buffer_full()) {
     record = new Record(millis());
     TEST_TERM(record, "Buffer too large");
     buffer.unshift(record);

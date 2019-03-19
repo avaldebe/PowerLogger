@@ -72,10 +72,10 @@ char *rtc_fmt(const char fmt){
   switch (fmt) {
 #ifdef INTERNAL_RTC
   case 'D': // long date
-    sprintf(str, "%04u-%02u-%02u", 2000+now.year, now.month, now.day);
+    sprintf(str, "%04u-%02u-%02u", 1970+now.year, now.month, now.day);
     break;
   case 'd': // short date
-    sprintf(str, "%02u%02u%02u", now.year, now.month, now.day);
+    sprintf(str, "%02u%02u%02u", now.year-30, now.month, now.day);
     break;
   case 'T': // long time
     sprintf(str, "%02u:%02u:%02u", now.hour, now.minute, now.second);
@@ -84,7 +84,7 @@ char *rtc_fmt(const char fmt){
     sprintf(str, "%02u%02u", now.hour, now.minute);
     break;
   case 'C': // file.csv
-    sprintf(str, "%02u%02u%02u.csv", now.year, now.month, now.day);
+    sprintf(str, "%02u%02u%02u.csv", now.year-30, now.month, now.day);
     break;
 #else
   case 'D': // long date

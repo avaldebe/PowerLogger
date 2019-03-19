@@ -2,6 +2,7 @@
 #define TERMutil_h
 #include <Arduino.h>
 
+#include <Arduino.h>
 #include "TERMu8x8.h"
 #ifdef TERM_U8X8
   #include <U8x8lib.h>

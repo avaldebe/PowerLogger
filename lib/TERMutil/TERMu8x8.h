@@ -77,6 +77,14 @@
   #endif
 #endif
 
+#ifndef DISPLAY_SIZE
+  #ifdef TERM_U8X8
+    #error "Missing DISPLAY_SIZE flag, e.g. -D DISPLAY_SIZE=0x8040"
+  #else                           // e.g. Serial.print
+    #define DISPLAY_SIZE 0xA0A0   // 20x20 characters
+  #endif
+#endif
+
 #ifdef DISPLAY_SIZE
   // decode DISPLAY_SIZE
   // display.size:          hex defined by DISPLAY_SIZE flag (eg 0x8040)
