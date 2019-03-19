@@ -69,10 +69,10 @@ OneButton button(BUTTON_PIN, true);       // with INPUT_PULLUP
   #define TERM_FAIL(fail)     TERMINAL.print((fail)?F("  Fail!\n"):F(""))
   #define TEST_TERM(ok, msg)  TERM_FAIL(!(ok)); TEST_ASSERT(ok)
 #endif
-#include <MemoryFree.h>
+#include <FreeStack.h>      // included with SdFat
 
 void test_MEM(void) {
-  int mem = freeMemory();
+  int mem = FreeStack();
   TERM_FMEM(mem/8);
   TEST_TERM(mem>0, "Not enough memory");
 }
