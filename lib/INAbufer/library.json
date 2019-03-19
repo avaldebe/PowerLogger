@@ -1,9 +1,6 @@
 {
     "name": "PowerLogger/INAbufer",
     "version": "0.1.0",
-    "build": {
-      "flags": "-I ../../src/"
-    },
     "dependencies": [ 
       { 
         "name": "INA2xx",
