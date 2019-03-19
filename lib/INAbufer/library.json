@@ -6,7 +6,7 @@
     },
     "dependencies": [ 
       { 
-        "name": "INA",
+        "name": "INA2xx",
         "version": ">=1.0.3", 
         "author":"Arnd"
       },
