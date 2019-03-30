@@ -175,23 +175,23 @@ void test_Display(void) {
   TERMINAL.print(F("size: 0x"));
   TERMINAL.println(display.size, HEX);
   TERMINAL.print(F("pixs: "));
-  TERMINAL.print(display.pixel.width);
+  TERMINAL.print(display.width);
   TERMINAL.print(F("x"));
-  TERMINAL.println(display.pixel.height);
+  TERMINAL.println(display.height);
   TERMINAL.print(F("text: "));
-  TERMINAL.print(display.text.cols);
-  TERMINAL.print(F("x"));TERMINAL.println(display.text.rows);
+  TERMINAL.print(display.cols);
+  TERMINAL.print(F("x"));TERMINAL.println(display.rows);
 
   TERM(F("  width"));
-  bool ok = TERMINAL.getCols() == display.text.cols;
+  bool ok = TERMINAL.getCols() == display.cols;
   TEST_TERM(ok, "Wrong display width");
 
   TERM(F("  height"));
-  ok = TERMINAL.getRows() == display.text.rows;
+  ok = TERMINAL.getRows() == display.rows;
   TEST_TERM(ok, "Wrong display height");
 
-  TERMINAL.drawGlyph(display.text.cols-1, 0, 'C');
-  TERMINAL.drawGlyph(0, display.text.rows-1, 'R');
+  TERMINAL.drawGlyph(display.cols-1, 0, 'C');
+  TERMINAL.drawGlyph(0, display.rows-1, 'R');
 #endif
 }
 

@@ -101,16 +101,16 @@
 
 #ifdef DISPLAY_SIZE
   // decode DISPLAY_SIZE
-  // display.size:          hex defined by DISPLAY_SIZE flag (eg 0x8040)
-  // display.pixel.width:   display width in pixels          (eg 128 pixels)
-  // display.pixel.height:  display height in pixels         (eg  32 pixels)
-  // display.text.cols:     max text cols (width/8)          (eg  16 cols)
-  // display.text.rows      max text rows (height/8)         (eg   8 rows)
+  // display.size:    hex defined by DISPLAY_SIZE flag (eg 0x8040)
+  // display.width:   display width in pixels          (eg 128 pixels)
+  // display.height:  display height in pixels         (eg  32 pixels)
+  // display.cols:    max text cols (width/8)          (eg  16 cols)
+  // display.rows     max text rows (height/8)         (eg   8 rows)
   #include <stdint.h>
   const union {
     uint16_t size;
-    struct { uint16_t height:8,  width:8;   } pixel;
-    struct { uint16_t :3,rows:5, :3,cols:5; } text;
+    struct { uint8_t height,    width;     };
+    struct { uint8_t :3,rows:5, :3,cols:5; };
   } display = { DISPLAY_SIZE };
 #endif
 
