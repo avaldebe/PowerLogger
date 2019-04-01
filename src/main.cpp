@@ -22,6 +22,9 @@ Based on
 
 - Unit Testing of a “Blink” Project
   http://docs.platformio.org/en/latest/tutorials/core/unit_testing_blink.html
+
+- STM32F103 low power settings
+  http://github.com/cbm80amiga/N5110_STM32_power_consumption
 */
 
 #include <Arduino.h>
@@ -53,7 +56,14 @@ void recording_toggle();
 void safe_shutdown();
 void backlight_toggle();
 
+#ifdef __STM32F1__
+#include <libmaple/pwr.h>
+#include <libmaple/scb.h>
+#endif
+void low_power();
+
 void setup() {
+  low_power();
 #ifdef LED_BUILTIN
   pinMode(LED_BUILTIN, OUTPUT);           // blink LED with activity
 #endif
@@ -181,4 +191,62 @@ void backlight_toggle() {
   // display backlight attached/controlled by BACKLIGHT_PIN
   digitalWrite(BACKLIGHT_PIN, is_on?HIGH:LOW);
 #endif
+}
+
+void low_power(){
+#ifdef __STM32F1__
+// unused ADCs
+  adc_disable_all();
+// unused clocks
+  rcc_clk_disable(RCC_ADC1);
+  rcc_clk_disable(RCC_ADC2);
+  rcc_clk_disable(RCC_ADC3);
+  rcc_clk_disable(RCC_AFIO);
+//rcc_clk_disable(RCC_BKP);  // internal RTC(?)
+  rcc_clk_disable(RCC_CRC);
+  rcc_clk_disable(RCC_DAC);
+  rcc_clk_disable(RCC_DMA1);
+  rcc_clk_disable(RCC_DMA2);
+  rcc_clk_disable(RCC_FLITF);
+  rcc_clk_disable(RCC_FSMC);
+//rcc_clk_disable(RCC_GPIOA);
+//rcc_clk_disable(RCC_GPIOB);
+//rcc_clk_disable(RCC_GPIOC);
+  rcc_clk_disable(RCC_GPIOD);
+  rcc_clk_disable(RCC_GPIOE);
+  rcc_clk_disable(RCC_GPIOF);
+  rcc_clk_disable(RCC_GPIOG);
+//rcc_clk_disable(RCC_I2C1); // TERMINAL, external RTC
+  rcc_clk_disable(RCC_I2C2);
+//rcc_clk_disable(RCC_PWR);  // internal RTC(?)
+  rcc_clk_disable(RCC_SDIO);
+//rcc_clk_disable(RCC_SPI1); // TERMINAL, SD card
+  #ifndef DISPLAY_H2_SPI
+  rcc_clk_disable(RCC_SPI2); // TERMINAL
+  #endif
+  rcc_clk_disable(RCC_SPI3);
+  rcc_clk_disable(RCC_SRAM);
+  rcc_clk_disable(RCC_TIMER1);
+  rcc_clk_disable(RCC_TIMER2);
+  rcc_clk_disable(RCC_TIMER3);
+  rcc_clk_disable(RCC_TIMER4);
+  rcc_clk_disable(RCC_TIMER5);
+  rcc_clk_disable(RCC_TIMER6);
+  rcc_clk_disable(RCC_TIMER7);
+  rcc_clk_disable(RCC_TIMER8);
+  rcc_clk_disable(RCC_TIMER9);
+  rcc_clk_disable(RCC_TIMER10);
+  rcc_clk_disable(RCC_TIMER11);
+  rcc_clk_disable(RCC_TIMER12);
+  rcc_clk_disable(RCC_TIMER13);
+  rcc_clk_disable(RCC_TIMER14);
+  #ifdef TERM_U8X8
+  rcc_clk_disable(RCC_USART1); // TERMINAL
+  rcc_clk_disable(RCC_USART2); // TERMINAL
+  rcc_clk_disable(RCC_USART3); // TERMINAL
+  #endif
+  rcc_clk_disable(RCC_UART4);
+  rcc_clk_disable(RCC_UART5);
+  rcc_clk_disable(RCC_USB);
+#endif  
 }
