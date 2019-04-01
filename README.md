@@ -73,7 +73,7 @@ on [power save mode][U8x8].
 ## Project configuration
 Different hardware combinations are defined on `platformio.ini`.
 Other options, such as sampling frequency, number of channels and buffer size,
-are defined on  `src/config.h`. Change as needed and copile the project with `pio run`.
+are defined on  `include/config.h`. Change as needed and copile the project with `pio run`.
 
 **Note** a single INA3221 counts as 3 INA channels.
 
