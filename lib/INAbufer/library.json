@@ -1,22 +1,21 @@
 {
-    "name": "PowerLogger/INAbufer",
-    "version": "0.1.0",
-    "build": {
-      "flags": "-I$PROJECTINCLUDE_DIR"
-    },
-    "dependencies": [ 
-      { 
-        "name": "INA2xx",
-        "version": ">=1.0.3", 
-        "author":"Arnd"
-      },
-      {
-        "name": "CircularBuffer", 
-        "version": ">=1.2.0", 
-        "authors":[
-          { "name": "AgileWare" }, 
-          { "name": "Roberto Lo Giacco", "maintainer": true } 
-        ]
-      }
-    ]
+  "name": "PowerLogger/INAbufer",
+  "version": "0.1.0",
+  "build": {
+    "flags": "-I$PROJECTINCLUDE_DIR"
+  },
+  "dependencies": [ 
+    { 
+      "name": "INA2xx",
+      "version": ">=1.0.3", 
+      "author":"Arnd"
+    },{
+      "name": "CircularBuffer", 
+      "version": ">=1.2.0", 
+      "authors":[
+        { "name": "AgileWare" }, 
+        { "name": "Roberto Lo Giacco", "maintainer": true } 
+      ]
+    }
+  ]
 }
