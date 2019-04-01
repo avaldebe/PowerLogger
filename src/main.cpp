@@ -123,7 +123,7 @@ void loop() {
     return;
   }
   TERMINAL_home();
-  record->splash(&TERMINAL);
+  record->splash(&TERMINAL, display.cols, display.rows);
   TERMINAL.print(record->getRunTime());
   TERMINAL.print(recording?F(" R:"):F(" P:"));
   TERMINAL.print(buffer.size());

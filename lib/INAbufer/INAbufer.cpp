@@ -75,13 +75,16 @@ void Record::print(Print* out) {
   out->println();
 }
 
-void Record::splash(Print* out, uint8_t width, bool header) {
+void Record::splash(Print* out, uint8_t width,  uint8_t height) {
+  bool header;
+  uint8_t i;
   switch (width) {
     case 16 ... 255:  // wide screen. eg 128x64 or 128x32
-                      //          0123456789ABCDEF
-                      //         "1: 23.000  1.000"
+      header = height > ina_count;
+      //                          0123456789ABCDEF
       if (header) { out->print(F("#   V [V]  I [A]\n")); }
-      for (uint8_t i=0; i<ina_count; i++) {
+      //                         "1: 23.000  1.000"
+      for (i=0; i<ina_count; i++) {
         out->print(i);out->print(F(":"));
         out->print(dtostrf(getVolts(i),7,3,linebuffer));
         out->print(dtostrf(getAmps(i) ,7,3,linebuffer));
@@ -89,10 +92,11 @@ void Record::splash(Print* out, uint8_t width, bool header) {
       }
     break;
     case 12 ... 15:   // narrow screem, eg 98X68
+      header = height > ina_count;
       //                          0123456789ABC
-      //                         "1 23.00 1.000"
       if (header) { out->print(F("# V [V] I [A]\n")); }
-      for (uint8_t i=0; i<ina_count; i++) {
+      //                         "1 23.00 1.000"
+      for (i=0; i<ina_count; i++) {
         out->print(i);
         out->print(dtostrf(getVolts(i),6,2,linebuffer));
         out->print(dtostrf(getAmps(i) ,6,3,linebuffer));
@@ -100,16 +104,17 @@ void Record::splash(Print* out, uint8_t width, bool header) {
       }
     break;
     case 6 ... 11:    // narrow screem, eg 84X48 or 64X48
-                      //          012345678
-                      //         "V1 23.000"
-                      //         "A1  1.000"
-      header &= width > 7;
-      for (uint8_t i=0; i<ina_count; i++) {
+      header = width > 7;
+      for (i=0; i<ina_count; i++) {
+        //                          012345678
         if (header) { out->print(F("V")); }
+        //                         "V1 23.000"
         out->print(i);
         out->print(dtostrf(getVolts(i),7,3,linebuffer));
         out->print(F("\n"));
+        //                          012345678
         if (header) { out->print(F("A")); }
+        //                         "A1  1.000"
         out->print(i);
         out->print(dtostrf(getAmps(i) ,7,3,linebuffer));
         out->print(F("\n"));

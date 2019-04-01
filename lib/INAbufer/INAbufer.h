@@ -25,7 +25,7 @@ public:
   static uint8_t init(Print* out);
   void header(Print* out);
   void print(Print* out);
-  void splash(Print* out, uint8_t width=16, bool header=true);
+  void splash(Print* out, uint8_t cols,  uint8_t rows);
 
   // size of 1 record from n channels
   #define RECORD_SIZE(n)  ((1+2*n)*sizeof(uint32_t))
