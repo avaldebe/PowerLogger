@@ -54,6 +54,9 @@ void safe_shutdown();
 void backlight_toggle();
 
 void setup() {
+#ifdef LED_BUILTIN
+  pinMode(LED_BUILTIN, OUTPUT);           // blink LED with activity
+#endif
   rtc_init();                             // set RTC if needed
 #ifdef SHORTPRESS
   button.setClickTicks(SHORTPRESS);       // single press duration [ms]
@@ -99,6 +102,9 @@ void setup() {
 }
 
 void loop() {
+#ifdef LED_BUILTIN
+  digitalWrite(LED_BUILTIN, LOW);         // blink LED with activity
+#endif
   static uint32_t last = 0;
   do { // test at least once
     // check for button presses untill is time for a new Record
@@ -106,6 +112,9 @@ void loop() {
     delay(10);
   } while (millis()-last<FREQUENCY);
   last = millis();
+#ifdef LED_BUILTIN
+  digitalWrite(LED_BUILTIN, HIGH);        // blink LED with activity
+#endif
 
   // measurements from all INA devices
   Record* record = new Record(last);
