@@ -1,0 +1,6 @@
+{
+    "terminal.integrated.env.linux": {
+        "PATH": "/home/alvarov/.platformio/penv/bin:/home/alvarov/.platformio/penv:/home/alvarov/bin:/home/alvarov/.local/bin:/home/alvarov/miniconda3/condabin:/home/alvarov/bin:/home/alvarov/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "PLATFORMIO_CALLER": "vscode"
+    }
+}
