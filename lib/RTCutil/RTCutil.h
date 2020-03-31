@@ -6,14 +6,14 @@
 #include <Print.h>
 
 #ifdef HAST_RTC
-  bool rtc_stale();
-  void rtc_init();
-  uint32_t rtc_now();
-  uint32_t rtc_now(uint32_t time);
-  char *rtc_fmt(const char fmt);  // returns internal buffer
+bool rtc_stale();
+void rtc_init();
+uint32_t rtc_now();
+uint32_t rtc_now(uint32_t time);
+char *rtc_fmt(const char fmt); // returns internal buffer
 #else
-  inline uint32_t rtc_init(){ return 0; };
-  inline uint32_t rtc_now(){ return 0; };
+inline uint32_t rtc_init() { return 0; };
+inline uint32_t rtc_now() { return 0; };
 #endif
 
 #endif

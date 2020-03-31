@@ -5,8 +5,8 @@
     "flags": "-D BUILD_TIME=$UNIX_TIME"
   },
   "dependencies": {
-    "name":"RTClib",
-    "version":">=1.2.1",
-    "author":"Adafruit"
+    "name": "RTClib",
+    "version": ">=1.2.1",
+    "author": "Adafruit"
   }
 }

@@ -1,6 +1,34 @@
 {
     "terminal.integrated.env.linux": {
-        "PATH": "/home/alvarov/.platformio/penv/bin:/home/alvarov/.platformio/penv:/home/alvarov/bin:/home/alvarov/.local/bin:/home/alvarov/miniconda3/condabin:/home/alvarov/bin:/home/alvarov/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "PATH": "${env:HOME}/.platformio/penv/bin:${env:HOME}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
         "PLATFORMIO_CALLER": "vscode"
-    }
+    },
+    "cSpell.words": [
+        "ADCs",
+        "AFIO",
+        "Adafruit",
+        "ATmega",
+        "FLITF",
+        "FSMC",
+        "GPIOA",
+        "GPIOB",
+        "GPIOC",
+        "GPIOD",
+        "GPIOE",
+        "GPIOF",
+        "GPIOG",
+        "INAbufer",
+        "LOLIN",
+        "RTClib",
+        "RTCs",
+        "RTCutil",
+        "SDIO",
+        "SRAM",
+        "TERMutil",
+        "USART",
+        "VCOMH",
+        "WEMOS",
+        "YYMMDD",
+        "dtostrf"
+    ]
 }

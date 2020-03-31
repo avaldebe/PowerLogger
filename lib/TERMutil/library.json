@@ -2,8 +2,8 @@
   "name": "PowerLogger/TERMutil",
   "version": "0.1.0",
   "dependencies": {
-    "name":"U8g2",
-    "version":">=2.23.16",
-    "author":"oliver"
+    "name": "U8g2",
+    "version": ">=2.23.16",
+    "author": "oliver"
   }
 }
