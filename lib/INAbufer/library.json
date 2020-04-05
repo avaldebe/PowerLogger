@@ -2,7 +2,7 @@
   "name": "PowerLogger/INAbufer",
   "version": "0.1.0",
   "build": {
-    "flags": "-I../../include/"
+    "includeDir": "../../include/"
   },
   "dependencies": [
     {
