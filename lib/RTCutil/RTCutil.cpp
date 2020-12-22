@@ -13,19 +13,16 @@
 
 #if HAST_RTC == INTERNAL_32kHz || HAST_RTC == INTERNAL_62kHz
 #define INTERNAL_RTC
-#ifndef __STM32F1__
+#ifndef STM32F1
 #error "Internal RTC options only for STM32F1"
 #endif
-#include <RTClock.h>             // builtin RTC
-#if HAST_RTC == INTERNAL_32kHz   // LSE: low-speed external oscillator
-static RTClock rtc(RTCSEL_LSE);  // 32768 Hz crystal
-#elif HAST_RTC == INTERNAL_62kHz // HSE: high-speed external oscillator
-static RTClock rtc(RTCSEL_HSE); // 8 MHz/128 (62500 Hz)
-#endif
-static tm_t now;
+#include <STM32RTC.h>   // builtin RTC
+STM32RTC& rtc = STM32RTC::getInstance();
+#include <time.h>
+static tm now;
 static uint32_t unixtime;
 #elif HAST_RTC == DS1307 || HAST_RTC == DS3231 || HAST_RTC == PCF8583 || HAST_RTC == PCF8563
-#include <RTClib.h> // External RTC
+#include <RTClib.h>     // External RTC
 #if HAST_RTC == DS1307
 static RTC_DS1307 rtc;
 #elif HAST_RTC == DS3231
@@ -50,6 +47,12 @@ bool rtc_stale()
 }
 void rtc_init()
 {
+#if HAST_RTC == INTERNAL_32kHz   // LSE: low-speed external oscillator
+  rtc.setClockSource(STM32RTC::LSE_CLOCK);  // 32768 Hz crystal
+#elif HAST_RTC == INTERNAL_62kHz // HSE: high-speed external oscillator
+  rtc.setClockSource(STM32RTC::HSE_CLOCK);  // 8 MHz/128 (62500 Hz)
+#endif
+  rtc.begin(); // initialize RTC 24H format
   if (rtc_stale())
   {
     rtc_now(BUILD_TIME);
@@ -59,8 +62,9 @@ void rtc_init()
 uint32_t rtc_now()
 {
 #ifdef INTERNAL_RTC
-  rtc.getTime(now);
-  unixtime = rtc.getTime();
+  unixtime = rtc.getEpoch();
+  time_t rawtime = unixtime;
+  now = *localtime(&rawtime);
 #else
   now = rtc.now();
   unixtime = now.unixtime();
@@ -71,7 +75,7 @@ uint32_t rtc_now()
 uint32_t rtc_now(uint32_t time)
 {
 #ifdef INTERNAL_RTC
-  rtc.setTime(time);
+  rtc.setEpoch(time);
 #else
   rtc.adjust(DateTime(time));
 #endif
@@ -85,19 +89,19 @@ char *rtc_fmt(const char fmt)
   {
 #ifdef INTERNAL_RTC
   case 'D': // long date
-    sprintf(str, "%04u-%02u-%02u", 1970 + now.year, now.month, now.day);
+    strftime(str, sizeof(str), "%Y-%m-%d", &now);
     break;
   case 'd': // short date
-    sprintf(str, "%02u%02u%02u", now.year - 30, now.month, now.day);
+    strftime(str, sizeof(str), "%y%m%d", &now);
     break;
   case 'T': // long time
-    sprintf(str, "%02u:%02u:%02u", now.hour, now.minute, now.second);
+    strftime(str, sizeof(str), "%H:%M:%S", &now);
     break;
   case 't': // short time
-    sprintf(str, "%02u%02u", now.hour, now.minute);
+    strftime(str, sizeof(str), "%H%M", &now);
     break;
   case 'C': // file.csv
-    sprintf(str, "%02u%02u%02u.csv", now.year - 30, now.month, now.day);
+    strftime(str, sizeof(str), "%y%m%d.csv", &now);
     break;
 #else
   case 'D': // long date
